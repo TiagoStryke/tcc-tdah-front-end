@@ -1,76 +1,76 @@
-.outer{
+.outer {
   height: 100vh;
-  background: linear-gradient(to top,#c9c9ff 50%,#6e6ef6 90%) no-repeat;
+  background: linear-gradient(to top, #c9c9ff 50%, #6e6ef6 90%) no-repeat;
 }
 
-.panel-heading{
+.panel-heading {
   text-align: center;
   margin-bottom: 10px;
 }
 
-#forget{
+#forget {
   min-width: 100px;
   margin-left: auto;
   text-decoration: none;
-  cursor:pointer;
-}
-
-a:hover{
-  text-decoration: none;
-}
-
-.form-inline label{
-  padding-left: 10px;
-  margin:0;
   cursor: pointer;
 }
 
-.fr{
+a:hover {
+  text-decoration: none;
+}
+
+.form-inline label {
+  padding-left: 10px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.fr {
   text-align: center;
 }
 
-.btn{
+.btn {
   margin-top: 20px;
   border-radius: 15px;
 }
 
-.panel{
+.panel {
   min-height: 380px;
   box-shadow: 10px 10px 90px rgb(255, 254, 254);
   border-radius: 12px;
   margin-top: 100px;
 }
 
-.input-field{
+.input-field {
   border-radius: 5px;
   padding: 5px;
   display: flex;
   align-items: center;
-  cursor:pointer;
-  border:1px solid #ddd;
-  color:#4343ff;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  color: #4343ff;
 }
 
-.input-field.error{
-  border:1px solid red;
+.input-field.error {
+  border: 1px solid red;
   color: red;
 }
 
-input[type='text'],
-input[type='password']{
+input[type="text"],
+input[type="password"] {
   border: none;
   outline: none;
   box-shadow: none;
   width: 100%;
 }
 
-.fa-eye-slash.btn{
+.fa-eye-slash.btn {
   border: none;
   outline: none;
-  box-shadow:none;
+  box-shadow: none;
 }
 
-img{
+img {
   width: 40px;
   height: 40px;
   object-fit: cover;
@@ -78,13 +78,13 @@ img{
   position: relative;
 }
 
-.bordert{
+.bordert {
   border-top: 1px solid #aaa;
   position: relative;
 }
 
-.bordert:after{
-  content:'ou se conecte com';
+.bordert:after {
+  content: "ou se conecte com";
   position: absolute;
   top: -13px;
   left: 33%;

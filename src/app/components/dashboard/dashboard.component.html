@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nome do Projeto</title>
+    <!-- set up google icon fonts -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet"
+    />
+    <!-- set up bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <!-- set up awesome fonts -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <aside>
+        <div class="top">
+          <h2>PACIENTES:</h2>
+          <div class="close" id="close-btn">
+            <span class="material-icons-sharp">close</span>
+          </div>
+          <div class="input-group rounded">
+            <input
+              type="search"
+              class="form-control rounded"
+              placeholder="Pesquisar"
+              aria-label="Search"
+              aria-describedby="search-addon"
+              [(ngModel)]="searchText"
+              autofocus
+            />
+          </div>
+        </div>
+        <div class="bottom">
+          <ul class="list-group list-group-flush">
+            <li
+              onclick="clickWorking()"
+              class="list-group-item"
+              *ngFor="let c of listPatients | appFilter: searchText"
+              appHighlight
+              [searchedWord]="searchText"
+              [content]="c"
+              [classToApply]="'font-weight-bold'"
+              [setTitle]="true"
+            >
+              {{ c }}
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </body>
+</html>
