@@ -64,7 +64,7 @@ export class DashboardComponent implements OnInit {
     this.listPatients = this.listPatients.sort();
   }
 
-  clickWorking() {
-    console.log('working');
+  clickWorking(e: any) {
+    console.log(e);
   }
 }

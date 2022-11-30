@@ -23,3 +23,5 @@ export class FilterPipe implements PipeTransform {
     });
   }
 }
+
+//TODO ignore accents on search

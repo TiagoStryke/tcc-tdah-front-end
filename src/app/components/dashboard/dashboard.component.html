@@ -27,13 +27,23 @@
     />
   </head>
   <body>
+    <div class="banner sticky">
+      <div class="banner-content">
+        <!-- TODO - add proper logo this one is a test -->
+        <img src="assets/images/logo-test.png" />
+        <h1>PROJETO TCC</h1>
+      </div>
+    </div>
     <div class="container">
+      <!-- SIDEBAR -->
       <aside>
         <div class="top">
           <h2>PACIENTES:</h2>
           <div class="close" id="close-btn">
             <span class="material-icons-sharp">close</span>
           </div>
+        </div>
+        <div class="search">
           <div class="input-group rounded">
             <input
               type="search"
@@ -49,20 +59,21 @@
         <div class="bottom">
           <ul class="list-group list-group-flush">
             <li
-              onclick="clickWorking()"
+              (click)="clickWorking($event)"
               class="list-group-item"
               *ngFor="let c of listPatients | appFilter: searchText"
               appHighlight
               [searchedWord]="searchText"
               [content]="c"
               [classToApply]="'font-weight-bold'"
-              [setTitle]="true"
             >
               {{ c }}
             </li>
           </ul>
         </div>
       </aside>
+      <!-- MAIN CONTENT -->
+      <div></div>
     </div>
   </body>
 </html>
