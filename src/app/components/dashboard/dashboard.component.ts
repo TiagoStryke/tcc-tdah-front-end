@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { getMatFormFieldDuplicatedHintError } from '@angular/material/form-field';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -8,7 +10,7 @@ import { Component, OnInit } from '@angular/core';
 export class DashboardComponent implements OnInit {
   searchText = '';
 
-  // mock back data
+  // mock backend data patients list
   listPatients = [
     'Rafaela Souza Teixeira',
     'Keline Pinheiro Araujo',
@@ -57,14 +59,42 @@ export class DashboardComponent implements OnInit {
     'Ivamastk Maria Pedrosa',
   ];
 
+  // mock backend data patient info
+  patient = {
+    id: '0',
+    nome: 'Rafaela Laureano Wanderley',
+    dataNascimento: '01-01-1999',
+    email: 'rafa@gmail.com',
+    codLogin: '#1xs3db',
+    dataDiagnostico: '2020-01-01',
+    tempoTerapia: '67',
+    outComorbidades: 'Nenhuma',
+  };
+
+  idade = 0;
+  tempoTerapia = this.getTempoTerapia();
+
   constructor() {}
 
   ngOnInit(): void {
     //TODO - get data from backend and sort there, delete this line
     this.listPatients = this.listPatients.sort();
+    this.idade = this.getIdade();
   }
 
   clickWorking(e: any) {
     console.log(e);
+  }
+
+  //FIXME - this function is not working properly
+  getIdade() {
+    const dataNascimento = new Date(this.patient.dataNascimento);
+    const dataAtual = new Date();
+    const idade = dataAtual.getFullYear() - dataNascimento.getFullYear();
+    return idade;
+  }
+  //TODO - function to transform the days of therapy into months
+  getTempoTerapia() {
+    return this.patient.tempoTerapia + ' dias';
   }
 }
