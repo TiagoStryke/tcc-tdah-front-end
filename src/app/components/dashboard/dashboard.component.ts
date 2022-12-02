@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { getMatFormFieldDuplicatedHintError } from '@angular/material/form-field';
+import { getMatLegacyFormFieldDuplicatedHintError as getMatFormFieldDuplicatedHintError } from '@angular/material/legacy-form-field';
 
 @Component({
   selector: 'app-dashboard',
