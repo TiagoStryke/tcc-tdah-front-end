@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import * as ApexCharts from 'apexcharts';
 
-import { getMatLegacyFormFieldDuplicatedHintError as getMatFormFieldDuplicatedHintError } from '@angular/material/legacy-form-field';
+import { Component, OnInit } from '@angular/core';
+import { chartBarBuilder, chartDaysBuilder } from '../../models/chartsOptions';
 
 @Component({
   selector: 'app-dashboard',
@@ -63,10 +64,10 @@ export class DashboardComponent implements OnInit {
   patient = {
     id: '0',
     nome: 'Rafaela Laureano Wanderley',
-    dataNascimento: '01-01-1999',
+    dataNascimento: '01/01/1999',
     email: 'rafa@gmail.com',
     codLogin: '#1xs3db',
-    dataDiagnostico: '2020-01-01',
+    dataDiagnostico: '01/01/2020',
     tempoTerapia: '67',
     outComorbidades: 'Nenhuma',
   };
@@ -80,6 +81,7 @@ export class DashboardComponent implements OnInit {
     //TODO - get data from backend and sort there, delete this line
     this.listPatients = this.listPatients.sort();
     this.idade = this.getIdade();
+    this.loadCharts();
   }
 
   clickWorking(e: any) {
@@ -96,5 +98,38 @@ export class DashboardComponent implements OnInit {
   //TODO - function to transform the days of therapy into months
   getTempoTerapia() {
     return this.patient.tempoTerapia + ' dias';
+  }
+
+  loadCharts() {
+    //TODO - get data to plot charts on backend
+    let chartDays = new chartDaysBuilder({ percentage: 100 }, { days: 7 });
+    let chartPoints = new chartBarBuilder();
+    let chartTimeAssignment = new chartBarBuilder();
+    let chartTimeClickColor = new chartBarBuilder();
+
+    let chartDaysRender = new ApexCharts(
+      document.querySelector('#chartDays'),
+      chartDays.getOptionsChartDays()
+    );
+
+    let chartPointsRender = new ApexCharts(
+      document.querySelector('#chartPoints'),
+      chartPoints.getOptionsChartPoints()
+    );
+
+    let chartTimeAssignmentRender = new ApexCharts(
+      document.querySelector('#chartTimeAssignment'),
+      chartTimeAssignment.getOptionsChartPoints()
+    );
+
+    let chartTimeClickColorRender = new ApexCharts(
+      document.querySelector('#chartTimeClickColor'),
+      chartTimeClickColor.getOptionsChartPoints()
+    );
+
+    chartDaysRender.render();
+    chartPointsRender.render();
+    chartTimeAssignmentRender.render();
+    chartTimeClickColorRender.render();
   }
 }

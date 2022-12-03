@@ -126,18 +126,18 @@
             </div>
             <div class="charts">
               <div class="row gx-1">
-                <div class="col-2">
-                  <h3>Período:</h3>
-                </div>
-                <div class="col-10">
-                  <select class="form-select">
-                    <option selected>Total</option>
-                    <option value="1">Semana anterior</option>
-                    <option value="2">Mês anterior</option>
-                    <option value="3">Trimestre anterior</option>
-                    <option value="4">Semestre anterior</option>
-                    <option value="5">Ano anterior</option>
-                  </select>
+                <div class="col-3">
+                  <h3>
+                    Período:
+                    <select class="form-select">
+                      <option selected>Total</option>
+                      <option value="week">Semana anterior</option>
+                      <option value="month">Mês anterior</option>
+                      <option value="trimester">Trimestre anterior</option>
+                      <option value="semester">Semestre anterior</option>
+                      <option value="year">Ano anterior</option>
+                    </select>
+                  </h3>
                 </div>
                 <div class="col-12">
                   <div class="form-check">
@@ -154,14 +154,32 @@
                 </div>
               </div>
               <!-- TODO implement graphs -->
-              <h3>Tempo para clicar em uma cor:</h3>
-              <canvas id="myChart" width="250" height="250"></canvas>
-              <h3>Tempo total para cumprir a tarefa:</h3>
-              <canvas id="myChart" width="250" height="250"></canvas>
-              <h3>Pontuação:</h3>
-              <canvas id="myChart" width="250" height="250"></canvas>
-              <h3>Dias usando a Plataforma:</h3>
-              <canvas id="myChart" width="250" height="250"></canvas>
+              <div class="row">
+                <div class="col-6">
+                  <h3>Dias usando a Plataforma:</h3>
+                  <div class="chartDays" id="chartDays"></div>
+                </div>
+                <div class="col-6">
+                  <h3>Pontuação:</h3>
+                  <div class="chartPoints" id="chartPoints"></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <h3>Tempo total para cumprir a tarefa:</h3>
+                  <div
+                    class="chartTimeAssignment"
+                    id="chartTimeAssignment"
+                  ></div>
+                </div>
+                <div class="col-6">
+                  <h3>Tempo para clicar em uma cor:</h3>
+                  <div
+                    class="chartTimeClickColor"
+                    id="chartTimeClickColor"
+                  ></div>
+                </div>
+              </div>
             </div>
           </main>
         </div>
