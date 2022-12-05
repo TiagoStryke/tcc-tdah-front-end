@@ -1,9 +1,12 @@
+interface interfaceChartDays {
+  days?: number;
+  percentage?: number;
+}
+
 export class chartDaysBuilder {
-  constructor(
-    { percentage }: { percentage: number },
-    { days }: { days: number }
-  ) {
+  constructor({ days = 0, percentage = 0 }: interfaceChartDays) {
     this.optionsChartDays.series[0] = percentage;
+
     if (percentage <= 25) {
       this.optionsChartDays.fill.colors = [this.failColor];
     }
@@ -39,6 +42,19 @@ export class chartDaysBuilder {
       type: 'radialBar',
       toolbar: {
         show: false,
+      },
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800,
+        animateGradually: {
+          enabled: true,
+          delay: 150,
+        },
+        dynamicAnimation: {
+          enabled: true,
+          speed: 350,
+        },
       },
     },
     plotOptions: {
@@ -111,30 +127,57 @@ export class chartDaysBuilder {
   };
 }
 
+interface interfaceChartBar {
+  type?: string;
+  series?: any;
+  xaxisCategories?: string[];
+}
+
 export class chartBarBuilder {
-  constructor() {}
+  constructor(
+    { sound }: { sound: boolean },
+    { type }: { type: string },
+    {
+      series = { name: '', data: [0] },
+      xaxisCategories = [''],
+    }: interfaceChartBar
+  ) {
+    this.optionsChartBar.xaxis.categories = xaxisCategories;
+    sound
+      ? (this.optionsChartBar.series = series)
+      : (this.optionsChartBar.series[0] = series[0]);
+
+    if (type === 'time') {
+      this.optionsChartBar.yaxis.title.text = this.typeSeconds;
+      this.optionsChartBar.tooltip.y.formatter = (val: string) => {
+        return val + this.typeSeconds;
+      };
+    } else {
+      this.optionsChartBar.yaxis.title.text = this.typePoints;
+      this.optionsChartBar.tooltip.y.formatter = (val: string) => {
+        return val + this.typePoints;
+      };
+    }
+  }
 
   getOptionsChartPoints() {
     return this.optionsChartBar;
   }
 
+  typePoints: string = ' Pontos';
+  typeSeconds: string = ' Segundos';
+
   optionsChartBar = {
-    series: [
-      {
-        name: 'Pontos',
-        data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-      },
-      {
-        name: 'Estímulos sonoros',
-        data: [, 85, 101, 98, 87, , 91, 140, ,],
-      },
-    ],
+    series: [{}],
     chart: {
       type: 'bar',
       height: 350,
       toolbar: {
         show: false,
       },
+    },
+    noData: {
+      text: 'Loading...',
     },
     plotOptions: {
       bar: {
@@ -163,21 +206,11 @@ export class chartBarBuilder {
       colors: ['transparent'],
     },
     xaxis: {
-      categories: [
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-      ],
+      categories: [''],
     },
     yaxis: {
       title: {
-        text: 'Minutos',
+        text: '',
       },
     },
     fill: {
@@ -186,7 +219,7 @@ export class chartBarBuilder {
     tooltip: {
       y: {
         formatter: function (val: string) {
-          return val + ' minutos';
+          return val + '';
         },
       },
     },

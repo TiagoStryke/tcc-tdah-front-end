@@ -67,7 +67,8 @@
                   appHighlight
                   [searchedWord]="searchText"
                   [content]="c"
-                  [classToApply]="'font-weight-bold'"
+                  [classToApply]="'fw-bolder'"
+                  [setTitle]="true"
                 >
                   {{ c }}
                 </li>
@@ -145,9 +146,10 @@
                       class="form-check-input"
                       type="checkbox"
                       value=""
-                      id="musicPresence"
+                      id="soundStimuli"
+                      (change)="soundStimuliCheck()"
                     />
-                    <label class="form-check-label" for="musicPresence">
+                    <label class="form-check-label" for="soundStimuli">
                       Presença de estímulos sonoros
                     </label>
                   </div>
@@ -155,24 +157,24 @@
               </div>
               <!-- TODO implement graphs -->
               <div class="row">
-                <div class="col-6">
+                <div class="col-sm-12 col-md-12 col-xl-6 col-lg-6">
                   <h3>Dias usando a Plataforma:</h3>
                   <div class="chartDays" id="chartDays"></div>
                 </div>
-                <div class="col-6">
+                <div class="col-sm-12 col-md-12 col-xl-6 col-lg-6">
                   <h3>Pontuação:</h3>
                   <div class="chartPoints" id="chartPoints"></div>
                 </div>
               </div>
               <div class="row">
-                <div class="col-6">
+                <div class="col-sm-12 col-md-6 col-xl-6 col-lg-6">
                   <h3>Tempo total para cumprir a tarefa:</h3>
                   <div
                     class="chartTimeAssignment"
                     id="chartTimeAssignment"
                   ></div>
                 </div>
-                <div class="col-6">
+                <div class="col-sm-12 col-md-6 col-xl-6 col-lg-6">
                   <h3>Tempo para clicar em uma cor:</h3>
                   <div
                     class="chartTimeClickColor"

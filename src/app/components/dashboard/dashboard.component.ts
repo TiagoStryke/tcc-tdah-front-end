@@ -72,9 +72,47 @@ export class DashboardComponent implements OnInit {
     outComorbidades: 'Nenhuma',
   };
 
+  // mock backend data charts
+  // TODO - treat the undefined values
+  charts = {
+    chartDaysData: { days: 3, percentage: 45 },
+    chartPointsData: {
+      type: 'week',
+      xaxisCategories: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
+      series: [
+        { name: 'Pontos', data: [50, 80, 20, 30, 40, 90, 120] },
+        { name: 'Estímulos sonoros', data: [60, 90, 30, 40, 50, 100, 130] },
+      ],
+    },
+    chartTimeAssignmentData: {
+      type: 'week',
+      xaxisCategories: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
+      series: [
+        { name: 'Segundos', data: [30, 20, 40, 23, 40, 50, 10] },
+        { name: 'Estímulos sonoros', data: [20, 10, 35, 15, 25, 42, 8] },
+      ],
+    },
+    chartTimeClickColorData: {
+      type: 'week',
+      xaxisCategories: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
+      series: [
+        { name: 'Segundos', data: [2, 1, 0.8, 2, 0.6, 2, 1] },
+        { name: 'Estímulos sonoros', data: [1.5, 0.7, 0.5, 1, 0.3, 1.2, 0.4] },
+      ],
+    },
+  };
+
+  soundSelect = { sound: false };
   idade = 0;
   tempoTerapia = this.getTempoTerapia();
-
+  chartDays!: chartDaysBuilder;
+  chartDaysRender!: ApexCharts;
+  chartPoints!: chartBarBuilder;
+  chartPointsRender!: ApexCharts;
+  chartTimeAssignment!: chartBarBuilder;
+  chartTimeAssignmentRender!: ApexCharts;
+  chartTimeClickColor!: chartBarBuilder;
+  chartTimeClickColorRender!: ApexCharts;
   constructor() {}
 
   ngOnInit(): void {
@@ -82,6 +120,7 @@ export class DashboardComponent implements OnInit {
     this.listPatients = this.listPatients.sort();
     this.idade = this.getIdade();
     this.loadCharts();
+    this.renderCharts();
   }
 
   clickWorking(e: any) {
@@ -102,34 +141,76 @@ export class DashboardComponent implements OnInit {
 
   loadCharts() {
     //TODO - get data to plot charts on backend
-    let chartDays = new chartDaysBuilder({ percentage: 100 }, { days: 7 });
-    let chartPoints = new chartBarBuilder();
-    let chartTimeAssignment = new chartBarBuilder();
-    let chartTimeClickColor = new chartBarBuilder();
+    this.chartDays = new chartDaysBuilder(this.charts.chartDaysData);
 
-    let chartDaysRender = new ApexCharts(
+    this.chartPoints = new chartBarBuilder(
+      this.soundSelect,
+      { type: 'points' },
+      this.charts.chartPointsData
+    );
+
+    this.chartTimeAssignment = new chartBarBuilder(
+      this.soundSelect,
+      { type: 'time' },
+      this.charts.chartTimeAssignmentData
+    );
+
+    this.chartTimeClickColor = new chartBarBuilder(
+      this.soundSelect,
+      { type: 'time' },
+      this.charts.chartTimeClickColorData
+    );
+  }
+
+  renderCharts() {
+    this.chartDaysRender = new ApexCharts(
       document.querySelector('#chartDays'),
-      chartDays.getOptionsChartDays()
+      this.chartDays.getOptionsChartDays()
     );
+    this.chartDaysRender.render();
 
-    let chartPointsRender = new ApexCharts(
+    this.chartPointsRender = new ApexCharts(
       document.querySelector('#chartPoints'),
-      chartPoints.getOptionsChartPoints()
+      this.chartPoints.getOptionsChartPoints()
     );
+    this.chartPointsRender.render();
 
-    let chartTimeAssignmentRender = new ApexCharts(
+    this.chartTimeAssignmentRender = new ApexCharts(
       document.querySelector('#chartTimeAssignment'),
-      chartTimeAssignment.getOptionsChartPoints()
+      this.chartTimeAssignment.getOptionsChartPoints()
     );
+    this.chartTimeAssignmentRender.render();
 
-    let chartTimeClickColorRender = new ApexCharts(
+    this.chartTimeClickColorRender = new ApexCharts(
       document.querySelector('#chartTimeClickColor'),
-      chartTimeClickColor.getOptionsChartPoints()
+      this.chartTimeClickColor.getOptionsChartPoints()
+    );
+    this.chartTimeClickColorRender.render();
+  }
+
+  updateCharts() {
+    this.chartDaysRender.updateOptions(
+      this.chartDays.getOptionsChartDays(),
+      true
+    );
+    this.chartPointsRender.updateOptions(
+      this.chartPoints.getOptionsChartPoints()
     );
 
-    chartDaysRender.render();
-    chartPointsRender.render();
-    chartTimeAssignmentRender.render();
-    chartTimeClickColorRender.render();
+    this.chartTimeAssignmentRender.updateOptions(
+      this.chartTimeAssignment.getOptionsChartPoints()
+    );
+
+    this.chartTimeClickColorRender.updateOptions(
+      this.chartTimeClickColor.getOptionsChartPoints()
+    );
+  }
+
+  soundStimuliCheck() {
+    let checker = document.querySelector('#soundStimuli') as HTMLInputElement;
+    this.soundSelect.sound = checker.checked;
+
+    this.loadCharts();
+    this.updateCharts();
   }
 }
