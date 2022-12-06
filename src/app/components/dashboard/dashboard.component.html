@@ -22,22 +22,23 @@
   <body>
     <!-- BANNER -->
     <!-- TODO work on banner -->
-    <div class="row">
-      <div class="banner sticky">
-        <div class="banner-content">
-          <!-- TODO - add proper logo this one is a test -->
-          <img src="assets/images/logo-test.png" />
-          <h1>PROJETO TCC</h1>
-        </div>
-        <div>
-          <!-- TODO profile options -->
-        </div>
+    <div class="banner">
+      <div class="banner-img">
+        <!-- TODO - add proper logo this one is a test -->
+        <img src="assets/images/logo-test.png" />
+      </div>
+      <div class="banner-content">
+        <h1>PROJETO TCC</h1>
+      </div>
+      <div class="profileOptions">
+        <!-- TODO profile options -->
+        <h2>Logout</h2>
       </div>
     </div>
     <div class="container-fluid">
       <!-- SIDEBAR -->
       <div class="row gx-3">
-        <div class="col-sm-4 col-md-4 col-xl-4 col-lg-4">
+        <div class="col-sm-4 col-md-4 col-lg-3 col-xl-2 col-xxl-2">
           <aside>
             <div class="top">
               <h2>PACIENTES:</h2>
@@ -61,14 +62,14 @@
             <div class="bottom">
               <ul class="list-group list-group-flush">
                 <li
-                  (click)="clickWorking($event)"
+                  (click)="getIdFromClick($event)"
                   class="list-group-item"
                   *ngFor="let c of listPatients | appFilter : searchText"
                   appHighlight
                   [searchedWord]="searchText"
-                  [content]="c"
+                  [content]="c.name"
                   [classToApply]="'fw-bolder'"
-                  [setTitle]="true"
+                  id="{{ c.id }}"
                 >
                   {{ c }}
                 </li>
@@ -77,47 +78,47 @@
           </aside>
         </div>
         <!-- MAIN CONTENT -->
-        <div class="col-sm-8 col-md-8 col-xl-8 col-lg-8">
+        <div class="col-sm-8 col-md-8 col-lg-9 col-xl-10 col-xxl-10">
           <main>
             <div class="info">
               <div class="row">
                 <div class="col-12">
                   <h2>INFORMAÇÕES DO PACIENTE:</h2>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     Nome: <span>{{ patient.nome }}</span>
                   </h3>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     Data de nascimento:
                     <span>{{ patient.dataNascimento }} ({{ idade }} Anos)</span>
                   </h3>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     E-mail: <span>{{ patient.email }}</span>
                   </h3>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     Código de login: <span>{{ patient.codLogin }}</span>
                   </h3>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     Data do diagnóstico de TDAH:
                     <span>{{ patient.dataDiagnostico }}</span>
                   </h3>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     Tempo de terapia em curso:
                     <span>{{ tempoTerapia }}</span>
                   </h3>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xl-6 col-lg-6">
+                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     Outras comorbidades:
                     <span>{{ patient.outComorbidades }}</span>
@@ -127,16 +128,25 @@
             </div>
             <div class="charts">
               <div class="row gx-1">
-                <div class="col-3">
+                <div class="col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                   <h3>
                     Período:
-                    <select class="form-select">
-                      <option selected>Total</option>
-                      <option value="week">Semana anterior</option>
-                      <option value="month">Mês anterior</option>
-                      <option value="trimester">Trimestre anterior</option>
-                      <option value="semester">Semestre anterior</option>
-                      <option value="year">Ano anterior</option>
+                    <select
+                      (change)="selectRange()"
+                      class="form-select"
+                      id="range"
+                    >
+                      <option value="lastSevenDays" selected>
+                        Últimos sete dias
+                      </option>
+                      <option value="lastWeek">Semana anterior</option>
+                      <option value="thisMonth">Mês atual</option>
+                      <option value="lastMonth">Mês anterior</option>
+                      <option value="lastTrimester">Trimestre anterior</option>
+                      <option value="lastSemester">Semestre anterior</option>
+                      <option value="thisYear">Este ano</option>
+                      <option value="lastYear">Ano anterior</option>
+                      <option value="total">Total</option>
                     </select>
                   </h3>
                 </div>
@@ -157,25 +167,25 @@
               </div>
               <!-- TODO implement graphs -->
               <div class="row">
-                <div class="col-sm-12 col-md-12 col-xl-6 col-lg-6">
-                  <h3>Dias usando a Plataforma:</h3>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                  <h3 class="chartTitle">Dias usando a Plataforma:</h3>
                   <div class="chartDays" id="chartDays"></div>
                 </div>
-                <div class="col-sm-12 col-md-12 col-xl-6 col-lg-6">
-                  <h3>Pontuação:</h3>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                  <h3 class="chartTitle">Pontuação:</h3>
                   <div class="chartPoints" id="chartPoints"></div>
                 </div>
               </div>
               <div class="row">
-                <div class="col-sm-12 col-md-6 col-xl-6 col-lg-6">
-                  <h3>Tempo total para cumprir a tarefa:</h3>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                  <h3 class="chartTitle">Tempo total para cumprir a tarefa:</h3>
                   <div
                     class="chartTimeAssignment"
                     id="chartTimeAssignment"
                   ></div>
                 </div>
-                <div class="col-sm-12 col-md-6 col-xl-6 col-lg-6">
-                  <h3>Tempo para clicar em uma cor:</h3>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                  <h3 class="chartTitle">Tempo para clicar em uma cor:</h3>
                   <div
                     class="chartTimeClickColor"
                     id="chartTimeClickColor"

@@ -38,7 +38,7 @@ export class chartDaysBuilder {
   optionsChartDays = {
     series: [0],
     chart: {
-      height: 250,
+      height: 350,
       type: 'radialBar',
       toolbar: {
         show: false,
