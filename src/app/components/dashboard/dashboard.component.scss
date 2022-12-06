@@ -40,7 +40,6 @@ html {
 }
 
 .banner-img {
-  position: static;
   padding-right: 2vw;
   align-self: right;
 }
@@ -147,6 +146,7 @@ aside .bottom {
 }
 
 .info {
+  position: relative;
   margin: 1.9rem 3rem 0 3rem;
 }
 
@@ -263,8 +263,17 @@ mat-date-range-input {
   }
 }
 
-// @media (max-width: 576px) {
-//   .banner-content h1 {
-//     padding-top: 1vh;
-//   }
-// }
+.pdf {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
+  position: absolute;
+  right: -2rem;
+  top: 1rem;
+  cursor: pointer;
+  font-size: 2em;
+  color: $color-dark;
+}
+.pdf:hover {
+  color: $color-primary;
+  font-size: 2.5em;
+  transition: all 0.3s ease;
+}

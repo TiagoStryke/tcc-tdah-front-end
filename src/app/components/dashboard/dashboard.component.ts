@@ -139,4 +139,6 @@ export class DashboardComponent implements OnInit {
     this.loadCharts();
     this.updateCharts();
   }
+
+  downloadPdf() {}
 }
