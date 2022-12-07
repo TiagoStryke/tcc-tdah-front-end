@@ -18,7 +18,7 @@
       crossorigin="anonymous"
     />
   </head>
-  <body>
+  <body (window:resize)="onResize($event)">
     <!-- BANNER -->
     <!-- TODO work on banner -->
     <div class="banner">
@@ -34,15 +34,25 @@
         <h2>Logout</h2>
       </div>
     </div>
+    <!-- menu button -->
+    <!-- TODO change title if not pacientes -->
+    <div title="Lista Pacientes" class="menu-btn">
+      <i (click)="controlDisplay()" id="menu-btn" class="fa-solid fa-bars"></i>
+    </div>
     <div class="container-fluid">
-      <!-- SIDEBAR -->
       <div class="row gx-3">
         <div class="col-sm-4 col-md-4 col-lg-3 col-xl-2 col-xxl-2">
-          <aside>
+          <!-- SIDEBAR -->
+          <aside id="aside">
             <div class="top">
               <h2>PACIENTES:</h2>
-              <div class="close" id="close-btn">
-                <span class="material-icons-sharp">close</span>
+              <div class="close">
+                <i
+                  (click)="controlDisplay()"
+                  id="close-btn"
+                  title="Fechar"
+                  class="fa-solid fa-xmark"
+                ></i>
               </div>
             </div>
             <div class="search">
@@ -76,14 +86,13 @@
             </div>
           </aside>
         </div>
-        <!-- MAIN CONTENT -->
         <div class="col-sm-8 col-md-8 col-lg-9 col-xl-10 col-xxl-10">
-          <main id="allInfo">
-            <div class="info">
+          <!-- MAIN CONTENT -->
+          <main id="main">
+            <div id="info" class="info">
               <div class="row">
                 <div class="col-12">
                   <h2>INFORMAÇÕES DO PACIENTE:</h2>
-
                   <i
                     (click)="downloadPdf()"
                     title="Download PDF"
@@ -92,47 +101,48 @@
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    Nome: <span>{{ patient.nome }}</span>
+                    {{ labels.info[0] }}<span>{{ patient.nome }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    Data de nascimento:
-                    <span>{{ patient.dataNascimento }} ({{ idade }} Anos)</span>
+                    {{ labels.info[1]
+                    }}<span
+                      >{{ patient.dataNascimento }} ({{ idade }} Anos)</span
+                    >
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    E-mail: <span>{{ patient.email }}</span>
+                    {{ labels.info[2] }}<span>{{ patient.email }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    Código de login: <span>{{ patient.codLogin }}</span>
+                    {{ labels.info[3] }}<span>{{ patient.codLogin }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    Data do diagnóstico de TDAH:
-                    <span>{{ patient.dataDiagnostico }}</span>
+                    {{ labels.info[4]
+                    }}<span>{{ patient.dataDiagnostico }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    Tempo de terapia em curso:
-                    <span>{{ tempoTerapia }}</span>
+                    {{ labels.info[5] }}<span>{{ tempoTerapia }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    Outras comorbidades:
-                    <span>{{ patient.outComorbidades }}</span>
+                    {{ labels.info[6]
+                    }}<span>{{ patient.outComorbidades }}</span>
                   </h3>
                 </div>
               </div>
             </div>
             <div class="charts">
-              <div class="row gx-1">
+              <div id="selectors" class="row gx-1">
                 <div class="col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
                   <h3>
                     Período:
@@ -170,31 +180,45 @@
                   </div>
                 </div>
               </div>
-              <!-- TODO implement graphs -->
-              <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-                  <h3 class="chartTitle">Dias usando a Plataforma:</h3>
-                  <div class="chartDays" id="chartDays"></div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-                  <h3 class="chartTitle">Pontuação:</h3>
-                  <div class="chartPoints" id="chartPoints"></div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-                  <h3 class="chartTitle">Tempo total para cumprir a tarefa:</h3>
+              <!-- CHARTS -->
+              <div id="chartsrow">
+                <div class="row">
                   <div
-                    class="chartTimeAssignment"
-                    id="chartTimeAssignment"
-                  ></div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-                  <h3 class="chartTitle">Tempo para clicar em uma cor:</h3>
+                    id="chart1"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                  >
+                    <h3 class="chartTitle">{{ labels.charts[0] }}</h3>
+                    <div class="chartDays" id="chartDays"></div>
+                  </div>
                   <div
-                    class="chartTimeClickColor"
-                    id="chartTimeClickColor"
-                  ></div>
+                    id="chart2"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                  >
+                    <h3 class="chartTitle">{{ labels.charts[1] }}</h3>
+                    <div class="chartPoints" id="chartPoints"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div
+                    id="chart3"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                  >
+                    <h3 class="chartTitle">{{ labels.charts[2] }}</h3>
+                    <div
+                      class="chartTimeAssignment"
+                      id="chartTimeAssignment"
+                    ></div>
+                  </div>
+                  <div
+                    id="chart4"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                  >
+                    <h3 class="chartTitle">{{ labels.charts[3] }}</h3>
+                    <div
+                      class="chartTimeClickColor"
+                      id="chartTimeClickColor"
+                    ></div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -194,7 +194,7 @@ export class chartBarBuilder {
       formatter: function (val: string) {
         return val;
       },
-      offsetY: -20,
+      offsetY: -30,
       style: {
         fontSize: '10px',
         colors: ['#304758'],
