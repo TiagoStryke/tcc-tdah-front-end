@@ -29,15 +29,35 @@
       <div class="banner-content">
         <h1>PROJETO TCC</h1>
       </div>
-      <div class="profileOptions">
-        <!-- TODO profile options -->
-        <h2>Logout</h2>
-      </div>
     </div>
-    <!-- menu button -->
+    <!-- MENU BUTTON -->
     <!-- TODO change title if not pacientes -->
     <div title="Lista Pacientes" class="menu-btn">
       <i (click)="controlDisplay()" id="menu-btn" class="fa-solid fa-bars"></i>
+    </div>
+    <div class="above">
+      <!-- PROFILE OPTIONS -->
+      <div class="profileOptions">
+        <!-- TODO pick profile photo from backend -->
+        <img
+          (click)="toggleOptions()"
+          title="Opções de Perfil"
+          class="profile-photo"
+          src="assets/images/profile-photo.png"
+          alt="profile-photo"
+        />
+        <span>Olá, {{ userName }}</span>
+        <div class="options shrink">
+          <ul>
+            <li>
+              <a href="#">Perfil</a>
+            </li>
+            <li>
+              <a href="#">Sair</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
     <div class="container-fluid">
       <div class="row gx-3">

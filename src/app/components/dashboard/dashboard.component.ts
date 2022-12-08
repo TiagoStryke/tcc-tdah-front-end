@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
   searchText = '';
   patient = mockData.patient; //TODO - delete mock
   charts: any = mockData.lastSevenDays; //TODO - delete mock
+  userName = mockData.user.name.split(' ').shift(); //TODO - delete mock
   listPatients: any;
   soundSelect = { sound: false };
   idade = 0;
@@ -69,7 +70,6 @@ export class DashboardComponent implements OnInit {
     if (el.clientWidth < 576) {
       this.controlDisplay(); //TODO - revise this when getting backend data
     }
-
     return click.target.id;
   }
 
@@ -166,7 +166,7 @@ export class DashboardComponent implements OnInit {
   soundStimuliCheck() {
     let checker = document.querySelector('#soundStimuli') as HTMLInputElement;
     this.soundSelect.sound = checker.checked;
-
+    console.log('object');
     this.loadCharts();
     this.updateCharts();
   }
@@ -228,6 +228,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  //TODO do this better - use .classList.toggle
   controlDisplay() {
     let aside = document.querySelector('#aside') as HTMLElement;
     let menuButton = document.querySelector('.menu-btn') as HTMLElement;
@@ -248,6 +249,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  //TODO should be a way to get rid of this
   onResize(event: any) {
     let aside = document.querySelector('#aside') as HTMLElement;
     let menuButton = document.querySelector('.menu-btn') as HTMLElement;
@@ -259,6 +261,14 @@ export class DashboardComponent implements OnInit {
       this.searchBar = true;
     } else if (this.searchBar) {
       main.style.display = 'none';
+    }
+  }
+
+  toggleOptions() {
+    let options = document.querySelector('.options');
+    if (options) {
+      options.classList.toggle('shrink');
+      // options.classList.toggle('invisible');
     }
   }
 }
