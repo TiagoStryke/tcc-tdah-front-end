@@ -2,7 +2,7 @@ import * as ApexCharts from 'apexcharts';
 import * as mockData from 'src/app/helpers/mockData';
 
 import { Component, OnInit } from '@angular/core';
-import { chartBarBuilder, chartDaysBuilder } from '../../models/chartsOptions';
+import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
 import { jsPDF } from 'jspdf';
 

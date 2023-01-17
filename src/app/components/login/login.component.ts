@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { UserService } from 'src/app/services/user.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -12,9 +14,14 @@ export class LoginComponent implements OnInit {
   login: string = '';
   password: string = '';
 
-  constructor() {}
+  constructor(private userService: UserService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    //TODO  -  backend response test
+    this.userService.list().subscribe((users) => {
+      console.log('users: ', users);
+    });
+  }
 
   hideShowPassword() {
     this.isText = !this.isText;

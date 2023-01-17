@@ -16,6 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { NgModule } from '@angular/core';
 import { SignupComponent } from './components/signup/signup.component';
+import { UserService } from './services/user.service';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,7 @@ import { SignupComponent } from './components/signup/signup.component';
     BrowserAnimationsModule,
     NgApexchartsModule,
   ],
-  providers: [],
+  providers: [UserService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
