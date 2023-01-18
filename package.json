@@ -10,7 +10,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~15.0.2",
+    "@angular/animations": "^15.0.4",
     "@angular/cdk": "^15.0.1",
     "@angular/common": "~15.0.2",
     "@angular/compiler": "~15.0.2",
@@ -24,6 +24,7 @@
     "bootstrap": "^5.2.2",
     "jspdf": "^2.5.1",
     "ng-apexcharts": "^1.7.4",
+    "ngx-toastr": "^16.0.2",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
