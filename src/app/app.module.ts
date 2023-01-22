@@ -8,18 +8,20 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ErrorInterceptor } from './interceptors/error-interceptor';
 import { FilterPipe } from './helpers/pipes/filter.pipe';
 import { FormsModule } from '@angular/forms';
+import { HeaderComponent } from './components/header/header.component';
 import { HighlightDirective } from './helpers/directives/highlight.pipe';
 import { LoginComponent } from './components/login/login.component';
-import { MainPageComponent } from './components/main-page/main-page.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { NgModule } from '@angular/core';
+import { ProfileComponent } from './components/profile/profile.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ToastrModule } from 'ngx-toastr';
 import { UserService } from './services/user.service';
+import { CodeGeneratorComponent } from './components/code-generator/code-generator.component';
 
 @NgModule({
   declarations: [
@@ -27,9 +29,11 @@ import { UserService } from './services/user.service';
     HighlightDirective,
     LoginComponent,
     SignupComponent,
-    MainPageComponent,
     DashboardComponent,
     FilterPipe,
+    ProfileComponent,
+    HeaderComponent,
+    CodeGeneratorComponent,
   ],
   imports: [
     BrowserModule,

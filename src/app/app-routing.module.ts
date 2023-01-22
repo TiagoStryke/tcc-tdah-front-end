@@ -1,16 +1,18 @@
 import { RouterModule, Routes } from '@angular/router';
 
+import { CodeGeneratorComponent } from './components/code-generator/code-generator.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LoginComponent } from './components/login/login.component';
-import { MainPageComponent } from './components/main-page/main-page.component';
 import { NgModule } from '@angular/core';
+import { ProfileComponent } from './components/profile/profile.component';
 import { SignupComponent } from './components/signup/signup.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'main-page', component: MainPageComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: 'code-generator', component: CodeGeneratorComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 

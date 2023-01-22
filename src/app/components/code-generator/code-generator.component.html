@@ -1,0 +1,33 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+/>
+<div class="outer">
+  <app-header></app-header>
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Edit Profile</title>
+    </head>
+    <body>
+      <h1>Gerar Código de Paciente</h1>
+      <form>
+        <label for="patient_code">Código de Paciente:</label>
+        <input
+          type="text"
+          id="patient_code"
+          name="patient_code"
+          value=""
+          disabled
+        />
+        <button class="edit">
+          <i class="fa-regular fa-copy"></i>
+        </button>
+        <br />
+        <input type="submit" value="Gerar Código" />
+      </form>
+    </body>
+  </html>
+
+  <!-- TODO - enable copy with the button -->
+</div>

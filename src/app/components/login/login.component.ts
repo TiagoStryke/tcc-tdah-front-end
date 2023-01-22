@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
 
   gotoDashboard() {
     //TODO  -  redirect to dashboard
-    // const win: Window = window;
-    // win.location = '/dashboard';
+    const win: Window = window;
+    win.location = '/dashboard';
   }
 }

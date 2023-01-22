@@ -1,0 +1,95 @@
+// TODO use purgecss to remove unused css
+// TODO centralize colors variables in a single file
+$color-primary-dark: #5b6aee;
+$color-primary: #7380ec;
+$color-primary-light: #8c9eff;
+$color-primary-lighter: #a8b7ff;
+$color-success: #41f1b6;
+$color-warning: #ffbb55;
+$color-white: #fff;
+$color-info-dark: #7d8da1;
+$color-info-light: #dce1eb;
+$color-dark: #363949;
+$color-light: rgba(132, 139, 200, 0.18);
+$color-banner: #7380ec;
+$color-background: #f9f8ff;
+$standard-font-size: 0.88rem;
+$color-label: hsl(213, 16%, 40%);
+
+html {
+  font-size: 14px;
+  height: 84vh;
+}
+
+.outer {
+  background: $color-background;
+}
+
+body {
+  font-family: poppins, sans-serif;
+  font-size: $standard-font-size;
+  background: $color-background;
+  user-select: none;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form {
+  margin: 20px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+}
+
+h1 {
+  margin-top: 50px;
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  width: 300px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+input[type="file"] {
+  width: 342px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+button.edit {
+  height: 50px;
+  width: 30px;
+  margin: 12px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="submit"] {
+  min-width: 342px;
+  background-color: #4caf50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;
+}

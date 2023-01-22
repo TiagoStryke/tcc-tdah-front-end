@@ -4,6 +4,7 @@ import * as mockData from 'src/app/helpers/mockData';
 import { Component, OnInit } from '@angular/core';
 import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
+import { Router } from '@angular/router';
 import { jsPDF } from 'jspdf';
 
 @Component({
@@ -53,7 +54,7 @@ export class DashboardComponent implements OnInit {
     select: [],
   };
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     //TODO - get data from backend and sort there, delete this line

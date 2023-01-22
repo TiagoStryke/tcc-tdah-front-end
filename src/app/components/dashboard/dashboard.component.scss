@@ -1,5 +1,5 @@
 // TODO use purgecss to remove unused css
-
+// TODO centralize colors variables in a single file
 $color-primary-dark: #5b6aee;
 $color-primary: #7380ec;
 $color-primary-light: #8c9eff;
@@ -31,27 +31,6 @@ html {
   font-size: 14px;
 }
 
-.banner-content {
-  color: #f9f8ff;
-}
-
-.banner-content h1 {
-  font-size: 10vh;
-  font-weight: 600;
-  padding-top: 2vh;
-}
-
-.banner-img {
-  padding-right: 2vw;
-  align-self: right;
-}
-.banner-img img {
-  width: 10vh;
-  border-radius: 10%;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
-
 .menu-btn {
   display: none;
 }
@@ -62,17 +41,6 @@ body {
   background: $color-background;
   user-select: none;
   overflow-x: hidden;
-}
-
-.banner {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 16vh;
-  background-color: $color-banner;
-  border-bottom-right-radius: 80rem 12rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
 }
 
 aside {
@@ -309,18 +277,6 @@ mat-date-range-input {
   border-radius: 1em;
 }
 
-@media (max-width: 950px) {
-  .banner-img img {
-    width: 10vw;
-  }
-}
-
-@media (max-width: 1010px) {
-  .banner-content h1 {
-    font-size: 10vw;
-  }
-}
-
 @media (max-width: 576px) {
   aside .close {
     display: block;
@@ -386,4 +342,49 @@ mat-date-range-input {
   color: $color-primary;
   font-size: 2.5em;
   transition: all 0.3s ease;
+}
+
+//TODO - remove that code and leave only in the banner component
+.banner-content {
+  color: #f9f8ff;
+}
+
+.banner-content h1 {
+  font-size: 10vh;
+  font-weight: 600;
+  padding-top: 2vh;
+}
+
+.banner-img {
+  padding-right: 2vw;
+  align-self: right;
+}
+.banner-img img {
+  width: 10vh;
+  border-radius: 10%;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.banner {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16vh;
+  background-color: $color-banner;
+  border-bottom-right-radius: 80rem 12rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 950px) {
+  .banner-img img {
+    width: 10vw;
+  }
+}
+
+@media (max-width: 1010px) {
+  .banner-content h1 {
+    font-size: 10vw;
+  }
 }
