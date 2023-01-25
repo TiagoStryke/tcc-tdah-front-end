@@ -272,4 +272,8 @@ export class DashboardComponent implements OnInit {
       // options.classList.toggle('invisible');
     }
   }
+
+  selectGame() {
+    //TODO - fill the select with the games from the database
+  }
 }

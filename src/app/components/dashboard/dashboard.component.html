@@ -170,7 +170,7 @@
             </div>
             <div class="charts">
               <div id="selectors" class="row gx-1">
-                <div class="col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
+                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
                   <h3>
                     Período:
                     <select
@@ -189,6 +189,19 @@
                       <option value="thisYear">Este ano</option>
                       <option value="lastYear">Ano anterior</option>
                       <option value="total">Total</option>
+                    </select>
+                  </h3>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                  <h3>
+                    Tipo de jogo:
+                    <select
+                      (change)="selectGame()"
+                      class="form-select"
+                      id="gameType"
+                    >
+                      <option value="">Jogo das cores</option>
+                      <option value="">Jogo do clique rápido</option>
                     </select>
                   </h3>
                 </div>
