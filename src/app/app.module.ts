@@ -4,6 +4,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
+import { CodeGeneratorComponent } from './components/code-generator/code-generator.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ErrorInterceptor } from './interceptors/error-interceptor';
 import { FilterPipe } from './helpers/pipes/filter.pipe';
@@ -18,10 +19,10 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { NgModule } from '@angular/core';
 import { ProfileComponent } from './components/profile/profile.component';
+import { ReactiveFormsModule } from '@angular/forms';
 import { SignupComponent } from './components/signup/signup.component';
 import { ToastrModule } from 'ngx-toastr';
 import { UserService } from './services/user.service';
-import { CodeGeneratorComponent } from './components/code-generator/code-generator.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { CodeGeneratorComponent } from './components/code-generator/code-generat
       progressBar: true,
       preventDuplicates: true,
     }),
+    ReactiveFormsModule,
   ],
   providers: [
     UserService,

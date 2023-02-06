@@ -1,5 +1,5 @@
-<app-header></app-header>
 <div class="outer">
+  <app-header></app-header>
   <div class="container">
     <div class="row">
       <div class="offset-md-2 col-lg-5 col-md-7 offset-lg-4 offset-md-3">
@@ -8,29 +8,100 @@
             <h3 class="pt-3 font-weight-bold">Inscrever-se</h3>
           </div>
           <div class="panel-body p-3">
-            <form>
+            <form [formGroup]="signupForm">
               <div class="form-group pt-3">
-                <div class="input-field">
+                <div
+                  class="input-field"
+                  [ngClass]="{
+                    error: firstName?.invalid && firstName?.touched
+                  }"
+                >
                   <span class="fa fa-user p-2"></span>
-                  <input type="text" placeholder="Nome" />
+                  <input
+                    type="text"
+                    placeholder="Nome"
+                    formControlName="firstName"
+                  />
+                  <div
+                    class="required"
+                    *ngIf="firstName?.invalid && firstName?.touched"
+                  >
+                    Nome é obrigatório!
+                  </div>
                 </div>
               </div>
               <div class="form-group pt-3">
-                <div class="input-field">
+                <div
+                  class="input-field"
+                  [ngClass]="{
+                    error: lastName?.invalid && lastName?.touched
+                  }"
+                >
                   <span class="fa fa-user p-2"></span>
-                  <input type="text" placeholder="Sobrenome" />
+                  <input
+                    type="text"
+                    placeholder="Sobrenome"
+                    formControlName="lastName"
+                  />
+                  <div
+                    class="required"
+                    *ngIf="lastName?.invalid && lastName?.touched"
+                  >
+                    Sobrenome é obrigatório!
+                  </div>
                 </div>
               </div>
               <div class="form-group pt-3">
-                <div class="input-field">
+                <div
+                  class="input-field"
+                  [ngClass]="{
+                    error: emailControl?.invalid && emailControl?.touched
+                  }"
+                >
                   <span class="fa fa-user p-2"></span>
-                  <input type="text" placeholder="E-mail" />
+                  <input
+                    type="text"
+                    placeholder="E-mail"
+                    formControlName="email"
+                  />
+                  <div
+                    class="required"
+                    *ngIf="emailControl?.invalid && emailControl?.touched"
+                  >
+                    Email Inválido!
+                  </div>
                 </div>
               </div>
               <div class="form-group pt-3">
-                <div class="input-field">
+                <div
+                  class="input-field"
+                  [ngClass]="{
+                    error: passwordControl?.invalid && passwordControl?.touched
+                  }"
+                >
                   <span class="fa fa-lock p-2"></span>
-                  <input [type]="type" placeholder="Senha" />
+                  <input
+                    [type]="type"
+                    placeholder="Senha"
+                    formControlName="password"
+                  />
+                  <div
+                    class="required"
+                    *ngIf="passwordControl?.invalid && passwordControl?.touched"
+                  >
+                    Senha Inválida!
+                  </div>
+                  <div class="tooltip-icon">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip"
+                      >A senha deve conter ao menos: <br />- Uma letra
+                      minúscula.<br />
+                      - Uma letra maiúscula.<br />
+                      - Um número.<br />
+                      - Um caractere especial ($@$!%*?&).<br />
+                      - Mínimo de 8 caracteres.</span
+                    >
+                  </div>
                   <span
                     (click)="hideShowPassword()"
                     class="fa {{ eyeIcon }}"
@@ -38,9 +109,24 @@
                 </div>
               </div>
               <div class="form-group pt-3">
-                <div class="input-field">
+                <div
+                  class="input-field"
+                  [ngClass]="{
+                  error: signupForm.errors?.['notSame'] && confirmPasswordControl?.touched
+                }"
+                >
                   <span class="fa fa-lock p-2"></span>
-                  <input [type]="type" placeholder="Confirmar senha" />
+                  <input
+                    [type]="type"
+                    placeholder="Confirmar senha"
+                    formControlName="confirmPassword"
+                  />
+                  <div
+                    class="required"
+                    *ngIf="signupForm.errors?.['notSame'] && confirmPasswordControl?.touched"
+                  >
+                    Os campos de senha devem ser iguais!
+                  </div>
                   <span
                     (click)="hideShowPassword()"
                     class="fa {{ eyeIcon }}"
@@ -50,6 +136,7 @@
               <button
                 type="submit"
                 class="btn btn-primary btn-block mt-4 w-100"
+                (click)="signup()"
               >
                 Inscrever-se
               </button>
