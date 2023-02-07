@@ -14,17 +14,18 @@
       <form>
         <label for="patient_code">Código de Paciente:</label>
         <input
+          class="code"
           type="text"
           id="patient_code"
           name="patient_code"
-          value=""
+          [value]="code"
           disabled
         />
-        <button class="edit">
+        <button title="Copiar" class="edit" (click)="copyToClipboard()">
           <i class="fa-regular fa-copy"></i>
         </button>
         <br />
-        <input type="submit" value="Gerar Código" />
+        <input type="submit" value="Gerar Código" (click)="generateCode()" />
       </form>
     </body>
   </html>

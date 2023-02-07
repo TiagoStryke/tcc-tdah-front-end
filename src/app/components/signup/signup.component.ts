@@ -110,8 +110,6 @@ export class SignupComponent implements OnInit {
       password: this.passwordControl?.value || '',
     };
 
-    console.log(signupUser);
-
     this.service.create(signupUser).subscribe((response: ResponseApp<User>) => {
       if (response.error) {
         this.toastr.error(response.message, 'Error');

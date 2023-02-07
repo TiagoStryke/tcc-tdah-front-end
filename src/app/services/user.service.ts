@@ -25,10 +25,23 @@ export class UserService extends DefaultService {
   }
 
   edit(user: User): Observable<ResponseApp<User>> {
+    console.log(user);
     return this.http.put<ResponseApp<User>>(`${this.url}/${user._id}`, user);
   }
 
   delete(id: String): Observable<ResponseApp<User>> {
     return this.http.delete<ResponseApp<User>>(`${this.url}/${id}`);
+  }
+
+  login(user: User): Observable<any> {
+    return this.http.post<ResponseApp<User>>(`${this.url}/login`, user);
+  }
+
+  insertGeneratedCode(user: User): Observable<ResponseApp<User>> {
+    console.log(user);
+    return this.http.put<ResponseApp<User>>(
+      `${this.url}/${user._id}/code`,
+      user
+    );
   }
 }

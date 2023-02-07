@@ -93,3 +93,12 @@ input[type="submit"] {
 input[type="submit"]:hover {
   background-color: #45a049;
 }
+
+.code {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-style: bold;
+}
