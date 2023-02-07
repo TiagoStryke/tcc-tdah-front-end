@@ -63,14 +63,14 @@ input[type="password"] {
   border: 2px solid #ccc;
   border-radius: 4px;
 }
-input[type="file"] {
-  width: 342px;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-}
+// input[type="file"] {
+//   width: 342px;
+//   padding: 12px 20px;
+//   margin: 8px 0;
+//   box-sizing: border-box;
+//   border: 2px solid #ccc;
+//   border-radius: 4px;
+// }
 
 button.edit {
   height: 50px;
@@ -94,4 +94,21 @@ input[type="submit"] {
 
 input[type="submit"]:hover {
   background-color: #45a049;
+}
+
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  text-align: center;
+  padding: 50px 0;
+  margin-top: 20px;
+  width: 97%;
+  cursor: pointer;
+  pointer-events: all;
+  color: $color-primary;
+  background-color: white;
+}
+
+.dropzone input[type="file"] {
+  display: none;
 }

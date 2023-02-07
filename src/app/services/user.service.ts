@@ -25,7 +25,6 @@ export class UserService extends DefaultService {
   }
 
   edit(user: User): Observable<ResponseApp<User>> {
-    console.log(user);
     return this.http.put<ResponseApp<User>>(`${this.url}/${user._id}`, user);
   }
 
@@ -38,7 +37,6 @@ export class UserService extends DefaultService {
   }
 
   insertGeneratedCode(user: User): Observable<ResponseApp<User>> {
-    console.log(user);
     return this.http.put<ResponseApp<User>>(
       `${this.url}/${user._id}/code`,
       user
