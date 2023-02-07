@@ -24,6 +24,7 @@ export class ProfileComponent implements OnInit {
   token = localStorage.getItem('token');
   user: any;
   userId: any;
+  photoTodataURL: string = '';
   userInfo = new FormGroup({
     username: new FormControl({ value: '', disabled: true }, [
       Validators.required,
@@ -85,11 +86,6 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  handleFiles(files: FileList) {
-    console.log('Dropped files: ', files);
-    // Add your own logic here to handle the dropped files
-  }
-
   openFileSelectionDialog() {
     let fileInput = document.querySelector('#fileInput') as HTMLInputElement;
     if (fileInput) {
@@ -100,6 +96,36 @@ export class ProfileComponent implements OnInit {
         }
       };
     }
+  }
+
+  handleFiles(file: FileList) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+
+    image.onload = () => {
+      const aspectRatio = image.naturalWidth / image.naturalHeight;
+      let newWidth = 45;
+      let newHeight = 45;
+      let x = 0;
+      let y = 0;
+      if (aspectRatio >= 1) {
+        newHeight = newWidth / aspectRatio;
+        y = (45 - newHeight) / 2;
+      } else {
+        newWidth = newHeight * aspectRatio;
+        x = (45 - newWidth) / 2;
+      }
+      canvas.width = 45;
+      canvas.height = 45;
+      if (ctx) {
+        ctx.fillStyle = 'transparent';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, x, y, newWidth, newHeight);
+      }
+      this.photoTodataURL = canvas.toDataURL();
+    };
+    image.src = URL.createObjectURL(file[0]);
   }
 
   findUserInfo() {
@@ -130,6 +156,7 @@ export class ProfileComponent implements OnInit {
       name: this.userInfo.controls.username.value || '',
       email: this.userInfo.controls.email.value || '',
       password: this.userInfo.controls.password.value || '',
+      profilePhoto: this.photoTodataURL,
     };
     this.service.edit(editedUser).subscribe((res) => {
       this.toastr.success('Dados atualizados com sucesso!', 'Sucesso');

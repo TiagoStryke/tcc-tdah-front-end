@@ -19,7 +19,7 @@ export class DashboardComponent implements OnInit {
   searchText = '';
   patient = mockData.patient; //TODO - delete mock
   charts: any = mockData.lastSevenDays; //TODO - delete mock
-  userName = mockData.user.name.split(' ').shift(); //TODO - delete mock
+  userName: string | undefined = '';
   listPatients: any;
   soundSelect = { sound: false };
   idade = 0;
@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit {
   token = localStorage.getItem('token');
   user: any;
   userId: any;
-
+  profilePhoto: string | undefined;
   searchBar: boolean = true;
   main: boolean = true;
 
@@ -68,13 +68,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.token) {
-      this.user = this.jwtToken.decodeToken(this.token);
-      this.userId = this.user.userId;
-    } else {
-      this.toastr.error('Erro efetue o Login novamente!', 'Error');
-      this.router.navigate(['/login']);
-    }
+    this.getUser();
     //TODO - get data from backend and sort there, delete this line
     this.listPatients = mockData.listPatients.sort((a, b) =>
       a.name.localeCompare(b.name)
@@ -297,5 +291,22 @@ export class DashboardComponent implements OnInit {
 
   logout() {
     localStorage.removeItem('token');
+  }
+
+  getUser() {
+    if (this.token) {
+      this.user = this.jwtToken.decodeToken(this.token);
+      this.userId = this.user.userId;
+    } else {
+      this.toastr.error('Erro efetue o Login novamente!', 'Error');
+      this.router.navigate(['/login']);
+    }
+
+    this.service.findById(this.userId).subscribe((res) => {
+      if (res.body.name) {
+        this.userName = res.body.name.split(' ').shift();
+        this.profilePhoto = res.body.profilePhoto;
+      }
+    });
   }
 }

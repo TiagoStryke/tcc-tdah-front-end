@@ -4,4 +4,5 @@ export interface User {
   email?: string;
   password?: string;
   generatedCode?: string[];
+  profilePhoto?: string;
 }
