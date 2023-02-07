@@ -4,7 +4,10 @@ import * as mockData from 'src/app/helpers/mockData';
 import { Component, OnInit } from '@angular/core';
 import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
+import { JWT_token } from 'src/app/services/jwt.token';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { UserService } from 'src/app/services/user.service';
 import { jsPDF } from 'jspdf';
 
 @Component({
@@ -29,6 +32,9 @@ export class DashboardComponent implements OnInit {
   chartTimeAssignmentRender!: ApexCharts;
   chartTimeClickColor!: chartBarBuilder;
   chartTimeClickColorRender!: ApexCharts;
+  token = localStorage.getItem('token');
+  user: any;
+  userId: any;
 
   searchBar: boolean = true;
   main: boolean = true;
@@ -54,9 +60,21 @@ export class DashboardComponent implements OnInit {
     select: [],
   };
 
-  constructor(private router: Router) {}
+  constructor(
+    private jwtToken: JWT_token,
+    private toastr: ToastrService,
+    private service: UserService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    if (this.token) {
+      this.user = this.jwtToken.decodeToken(this.token);
+      this.userId = this.user.userId;
+    } else {
+      this.toastr.error('Erro efetue o Login novamente!', 'Error');
+      this.router.navigate(['/login']);
+    }
     //TODO - get data from backend and sort there, delete this line
     this.listPatients = mockData.listPatients.sort((a, b) =>
       a.name.localeCompare(b.name)
@@ -275,5 +293,9 @@ export class DashboardComponent implements OnInit {
 
   selectGame() {
     //TODO - fill the select with the games from the database
+  }
+
+  logout() {
+    localStorage.removeItem('token');
   }
 }
