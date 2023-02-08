@@ -105,7 +105,7 @@
                   [searchedWord]="searchText"
                   [content]="c.name"
                   [classToApply]="'fw-bolder'"
-                  id="{{ c.id }}"
+                  id="{{ c._id }}"
                 >
                   {{ c }}
                 </li>
@@ -128,14 +128,14 @@
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    {{ labels.info[0] }}<span>{{ patient.nome }}</span>
+                    {{ labels.info[0] }}<span>{{ patient.name }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     {{ labels.info[1]
                     }}<span
-                      >{{ patient.dataNascimento }} ({{ idade }} Anos)</span
+                      >{{ patient.birthDate }} ({{ patient.age }} Anos)</span
                     >
                   </h3>
                 </div>
@@ -151,19 +151,18 @@
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    {{ labels.info[4]
-                    }}<span>{{ patient.dataDiagnostico }}</span>
+                    {{ labels.info[4] }}<span>{{ patient.diagnosisDate }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
-                    {{ labels.info[5] }}<span>{{ tempoTerapia }}</span>
+                    {{ labels.info[5] }}<span>{{ patient.therapyTime }}</span>
                   </h3>
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
                   <h3>
                     {{ labels.info[6]
-                    }}<span>{{ patient.outComorbidades }}</span>
+                    }}<span>{{ patient.otherComorbidities }}</span>
                   </h3>
                 </div>
               </div>

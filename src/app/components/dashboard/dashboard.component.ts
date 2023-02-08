@@ -5,6 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
 import { JWT_token } from 'src/app/services/jwt.token';
+import Patient from '../Interfaces/Patient';
 import { PatientService } from 'src/app/services/patient.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -18,13 +19,11 @@ import { jsPDF } from 'jspdf';
 })
 export class DashboardComponent implements OnInit {
   searchText = '';
-  patient = mockData.patient; //TODO - delete mock
+  patient: Patient = {};
   charts: any = mockData.lastSevenDays; //TODO - delete mock
   userName: string | undefined = '';
   listPatients: any;
   soundSelect = { sound: false };
-  idade = 0;
-  tempoTerapia = this.getTempoTerapia();
   chartDays!: chartDaysBuilder;
   chartDaysRender!: ApexCharts;
   chartPoints!: chartBarBuilder;
@@ -39,6 +38,7 @@ export class DashboardComponent implements OnInit {
   profilePhoto: string | undefined;
   searchBar: boolean = true;
   main: boolean = true;
+  PatientId: string = '';
 
   labels = {
     info: [
@@ -72,7 +72,6 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getUser();
     this.getListOfPatients();
-    this.idade = this.getIdade();
     this.loadCharts();
     this.renderCharts();
   }
@@ -80,21 +79,14 @@ export class DashboardComponent implements OnInit {
   getIdFromClick(click: any) {
     let el = document.querySelector('body') as HTMLElement;
     if (el.clientWidth < 576) {
-      this.controlDisplay(); //TODO - revise this when getting backend data
+      this.controlDisplay();
     }
-    return click.target.id;
+    this.PatientId = click.target.id;
+    this.loadPatientInfo();
   }
 
-  //FIXME - this function is not working properly
-  getIdade() {
-    const dataNascimento = new Date(this.patient.dataNascimento);
-    const dataAtual = new Date();
-    const idade = dataAtual.getFullYear() - dataNascimento.getFullYear();
-    return idade;
-  }
-  //TODO - function to transform the days of therapy into months
-  getTempoTerapia() {
-    return this.patient.tempoTerapia + ' dias';
+  findIndexById(array: any[], id: string): number {
+    return array.findIndex((item) => item._id === id);
   }
 
   selectRange() {
@@ -178,7 +170,6 @@ export class DashboardComponent implements OnInit {
   soundStimuliCheck() {
     let checker = document.querySelector('#soundStimuli') as HTMLInputElement;
     this.soundSelect.sound = checker.checked;
-    console.log('object');
     this.loadCharts();
     this.updateCharts();
   }
@@ -312,9 +303,75 @@ export class DashboardComponent implements OnInit {
   getListOfPatients() {
     this.pService.listPatients(this.userId).subscribe((res) => {
       this.listPatients = res.body;
-      console.log(this.listPatients);
     });
+  }
 
-    //TODO sort the patients by name
+  loadPatientInfo() {
+    if (!this.listPatients) {
+      this.toastr.error('Lista de Pacientes indisponível');
+      return;
+    }
+    if (!this.patient) {
+      this.toastr.error('Paciente não encontrado');
+      return;
+    }
+
+    let index = this.findIndexById(this.listPatients, this.PatientId);
+    this.patient = this.listPatients[index];
+
+    if (this.patient.birthDate) {
+      const today = new Date();
+      const birthDate = new Date(this.patient.birthDate);
+
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      this.patient.age = age;
+      this.patient.birthDate = new Date(
+        this.patient.birthDate
+      ).toLocaleDateString('pt-BR');
+    }
+
+    if (this.patient.diagnosisDate) {
+      this.patient.diagnosisDate = new Date(
+        this.patient.diagnosisDate
+      ).toLocaleDateString('pt-BR');
+    }
+    if (this.patient.createdAt) {
+      const therapyStart = new Date(this.patient.createdAt);
+      const therapyEnd = new Date();
+      const diffTime = Math.abs(therapyEnd.getTime() - therapyStart.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 30) {
+        this.patient.therapyTime =
+          diffDays === 1 ? diffDays + ' dia' : diffDays + ' dias';
+      } else {
+        const diffYears = Math.floor(diffDays / 365);
+        const diffMonths = Math.floor((diffDays - diffYears * 365) / 30) % 12;
+        const diffMonthString =
+          diffMonths === 1 ? diffMonths + ' mês' : diffMonths + ' meses';
+        const diffYearString =
+          diffYears === 1 ? diffYears + ' ano' : diffYears + ' anos';
+        const diffDayString =
+          diffDays - diffYears * 365 - diffMonths * 30 + ' dias';
+
+        if (diffYears > 0 && diffMonths > 0 && diffDays > 0) {
+          this.patient.therapyTime =
+            diffYearString + ', ' + diffMonthString + ' e ' + diffDayString;
+        } else if (diffYears > 0 && diffMonths === 0) {
+          this.patient.therapyTime = diffYearString;
+        } else if (diffYears > 0 && diffMonths > 0) {
+          this.patient.therapyTime = diffYearString + ' e ' + diffMonthString;
+        } else if (diffMonths > 0 && diffDays === 0) {
+          this.patient.therapyTime = diffMonthString;
+        } else if (diffMonths > 0 && diffDays > 0) {
+          this.patient.therapyTime = diffMonthString + ' e ' + diffDayString;
+        }
+      }
+    }
   }
 }
