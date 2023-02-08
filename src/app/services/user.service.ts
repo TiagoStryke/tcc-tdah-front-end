@@ -42,4 +42,8 @@ export class UserService extends DefaultService {
       user
     );
   }
+
+  listPatients(id: string): Observable<ResponseApp<User>> {
+    return this.http.get<ResponseApp<User>>(`${this.url}/responsible/${id}`);
+  }
 }

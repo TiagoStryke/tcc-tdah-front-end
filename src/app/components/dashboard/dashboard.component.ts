@@ -5,6 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
 import { JWT_token } from 'src/app/services/jwt.token';
+import { PatientService } from 'src/app/services/patient.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/services/user.service';
@@ -64,15 +65,13 @@ export class DashboardComponent implements OnInit {
     private jwtToken: JWT_token,
     private toastr: ToastrService,
     private service: UserService,
+    private pService: PatientService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.getUser();
-    //TODO - get data from backend and sort there, delete this line
-    this.listPatients = mockData.listPatients.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+    this.getListOfPatients();
     this.idade = this.getIdade();
     this.loadCharts();
     this.renderCharts();
@@ -308,5 +307,14 @@ export class DashboardComponent implements OnInit {
         this.profilePhoto = res.body.profilePhoto;
       }
     });
+  }
+
+  getListOfPatients() {
+    this.pService.listPatients(this.userId).subscribe((res) => {
+      this.listPatients = res.body;
+      console.log(this.listPatients);
+    });
+
+    //TODO sort the patients by name
   }
 }

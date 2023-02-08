@@ -9,12 +9,17 @@ export class FilterPipe implements PipeTransform {
     if (!searchText) {
       return items;
     }
-    searchText = searchText.toLocaleLowerCase();
+    searchText = searchText
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLocaleLowerCase();
 
     return items.filter((it) => {
-      return it.name.toLocaleLowerCase().includes(searchText);
+      return it.name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase()
+        .includes(searchText);
     });
   }
 }
-
-//TODO ignore accents on search
