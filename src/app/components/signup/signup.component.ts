@@ -6,10 +6,10 @@ import {
 } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
-import { ResponseApp } from 'src/app/models/response';
+import { ResponseApp } from 'src/app/components/Interfaces/response';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { User } from 'src/app/models/user';
+import { User } from 'src/app/components/Interfaces/user';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({

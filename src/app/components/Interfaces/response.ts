@@ -1,4 +1,4 @@
-import HttpStatusCode from './http-status-code';
+import HttpStatusCode from '../../models/http-status-code';
 
 export interface ResponseApp<T> {
   body: T;

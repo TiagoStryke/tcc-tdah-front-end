@@ -2,8 +2,14 @@ import * as ApexCharts from 'apexcharts';
 import * as mockData from 'src/app/helpers/mockData';
 
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
+import { DateRange } from '@angular/material/datepicker';
+import { Game } from '../Interfaces/game';
+import { GameResults } from '../Interfaces/gameResults';
+import { GameResultsService } from 'src/app/services/game-results.service';
+import { GameService } from 'src/app/services/game.service';
 import { JWT_token } from 'src/app/services/jwt.token';
 import Patient from '../Interfaces/Patient';
 import { PatientService } from 'src/app/services/patient.service';
@@ -38,8 +44,8 @@ export class DashboardComponent implements OnInit {
   profilePhoto: string | undefined;
   searchBar: boolean = true;
   main: boolean = true;
-  PatientId: string = '';
-
+  patientId: string = '';
+  picker: any;
   labels = {
     info: [
       'Nome: ',
@@ -60,12 +66,26 @@ export class DashboardComponent implements OnInit {
     ],
     select: [],
   };
+  games: any = [{ name: 'Nenhum jogo cadastrado' }];
+
+  filtersForm = new FormGroup({
+    start: new FormControl('', [Validators.required]),
+    end: new FormControl('', [Validators.required]),
+    gameSelected: new FormControl('gameNotSelected', [
+      Validators.required,
+      this.gameSelectedValidator,
+    ]),
+    soundStimuli: new FormControl('no', [Validators.required]),
+  });
+  gameResults: GameResults | undefined;
 
   constructor(
     private jwtToken: JWT_token,
     private toastr: ToastrService,
     private service: UserService,
     private pService: PatientService,
+    private gService: GameService,
+    private rService: GameResultsService,
     private router: Router
   ) {}
 
@@ -74,6 +94,61 @@ export class DashboardComponent implements OnInit {
     this.getListOfPatients();
     this.loadCharts();
     this.renderCharts();
+    this.listGames();
+  }
+
+  loadResults() {
+    console.log(this.filtersForm.value.start);
+    if (this.filtersForm.valid) {
+      this.getGameResults();
+    }
+  }
+
+  getGameResults() {
+    if (
+      this.filtersForm.value.start != null &&
+      this.filtersForm.value.end != null &&
+      this.filtersForm.value.gameSelected != null
+    ) {
+      this.rService
+        .listResultsbyDate(
+          this.patientId,
+          this.filtersForm.value.gameSelected,
+          new Date(this.filtersForm.value.start).toISOString(),
+          new Date(this.filtersForm.value.end).toISOString()
+        )
+        .subscribe((res) => {
+          this.gameResults = res.body;
+          console.log(this.gameResults);
+        });
+    }
+  }
+
+  gameSelectedValidator(control: FormControl) {
+    if (control.value === 'gameNotSelected') {
+      return { gameSelected: true };
+    }
+    return null;
+  }
+
+  toggleHidden(element: Element) {
+    element.classList.toggle('hidden');
+  }
+
+  showInformation() {
+    let info = document.querySelector('.patientSelected');
+    let warning = document.querySelector('.noPatientSelected');
+
+    if (warning && !warning.classList.contains('hidden') && info) {
+      this.toggleHidden(warning);
+      this.toggleHidden(info);
+    }
+  }
+
+  listGames() {
+    this.gService.listGames().subscribe((res) => {
+      this.games = res.body;
+    });
   }
 
   getIdFromClick(click: any) {
@@ -81,7 +156,8 @@ export class DashboardComponent implements OnInit {
     if (el.clientWidth < 576) {
       this.controlDisplay();
     }
-    this.PatientId = click.target.id;
+    this.patientId = click.target.id;
+    this.showInformation();
     this.loadPatientInfo();
   }
 
@@ -167,13 +243,6 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  soundStimuliCheck() {
-    let checker = document.querySelector('#soundStimuli') as HTMLInputElement;
-    this.soundSelect.sound = checker.checked;
-    this.loadCharts();
-    this.updateCharts();
-  }
-
   downloadPdf() {
     //FIXME - verify if this is the data needed, format the data and add to pdf
     const doc = new jsPDF();
@@ -252,7 +321,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  //TODO should be a way to get rid of this
+  //TODO should be a way to get rid of this with media querys
   onResize(event: any) {
     let aside = document.querySelector('#aside') as HTMLElement;
     let menuButton = document.querySelector('.menu-btn') as HTMLElement;
@@ -273,10 +342,6 @@ export class DashboardComponent implements OnInit {
       options.classList.toggle('shrink');
       // options.classList.toggle('invisible');
     }
-  }
-
-  selectGame() {
-    //TODO - fill the select with the games from the database
   }
 
   logout() {
@@ -316,7 +381,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    let index = this.findIndexById(this.listPatients, this.PatientId);
+    let index = this.findIndexById(this.listPatients, this.patientId);
     this.patient = this.listPatients[index];
 
     if (this.patient.birthDate) {
@@ -330,13 +395,13 @@ export class DashboardComponent implements OnInit {
       }
 
       this.patient.age = age;
-      this.patient.birthDate = new Date(
+      this.patient.birthDateFormatted = new Date(
         this.patient.birthDate
       ).toLocaleDateString('pt-BR');
     }
 
     if (this.patient.diagnosisDate) {
-      this.patient.diagnosisDate = new Date(
+      this.patient.diagnosisDateFormatted = new Date(
         this.patient.diagnosisDate
       ).toLocaleDateString('pt-BR');
     }

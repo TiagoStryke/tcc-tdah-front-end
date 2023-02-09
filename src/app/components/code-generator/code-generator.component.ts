@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { JWT_token } from '../../services/jwt.token';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { User } from '../../models/user';
+import { User } from '../Interfaces/user';
 import { UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'app-code-generator',

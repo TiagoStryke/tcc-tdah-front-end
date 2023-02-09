@@ -20,7 +20,6 @@
   </head>
   <body (window:resize)="onResize($event)">
     <!-- BANNER -->
-    <!-- TODO work on banner -->
     <a href="/dashboard" class="back">
       <div class="banner">
         <div class="banner-img">
@@ -32,17 +31,14 @@
           <h1>PROJETO TCC</h1>
         </div>
       </div>
-      <!-- TODO  - blend the header in ither pages -->
     </a>
     <!-- MENU BUTTON -->
-    <!-- TODO change title if not pacientes -->
     <div title="Lista Pacientes" class="menu-btn">
       <i (click)="controlDisplay()" id="menu-btn" class="fa-solid fa-bars"></i>
     </div>
     <div class="above">
       <!-- PROFILE OPTIONS -->
       <div class="profileOptions">
-        <!-- TODO pick profile photo from backend -->
         <img
           (click)="toggleOptions()"
           title="Opções de Perfil"
@@ -126,86 +122,138 @@
                     class="pdf fa-regular fa-file-pdf"
                   ></i>
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                <div class="noPatientSelected">
                   <h3>
-                    {{ labels.info[0] }}<span>{{ patient.name }}</span>
+                    Selecione um paciente da lista para ver as informações
                   </h3>
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                  <h3>
-                    {{ labels.info[1]
-                    }}<span
-                      >{{ patient.birthDate }} ({{ patient.age }} Anos)</span
-                    >
-                  </h3>
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                  <h3>
-                    {{ labels.info[2] }}<span>{{ patient.email }}</span>
-                  </h3>
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                  <h3>
-                    {{ labels.info[3] }}<span>{{ patient.codLogin }}</span>
-                  </h3>
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                  <h3>
-                    {{ labels.info[4] }}<span>{{ patient.diagnosisDate }}</span>
-                  </h3>
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                  <h3>
-                    {{ labels.info[5] }}<span>{{ patient.therapyTime }}</span>
-                  </h3>
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                  <h3>
-                    {{ labels.info[6]
-                    }}<span>{{ patient.otherComorbidities }}</span>
-                  </h3>
+                <div class="row patientSelected hidden">
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                    <h3>
+                      {{ labels.info[0] }}<span>{{ patient.name }}</span>
+                    </h3>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                    <h3>
+                      {{ labels.info[1]
+                      }}<span
+                        >{{ patient.birthDateFormatted }} ({{
+                          patient.age
+                        }}
+                        Anos)</span
+                      >
+                    </h3>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                    <h3>
+                      {{ labels.info[2] }}<span>{{ patient.email }}</span>
+                    </h3>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                    <h3>
+                      {{ labels.info[3] }}<span>{{ patient.codLogin }}</span>
+                    </h3>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                    <h3>
+                      {{ labels.info[4]
+                      }}<span>{{ patient.diagnosisDateFormatted }}</span>
+                    </h3>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                    <h3>
+                      {{ labels.info[5] }}<span>{{ patient.therapyTime }}</span>
+                    </h3>
+                  </div>
+                  <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                    <h3>
+                      {{ labels.info[6]
+                      }}<span>{{ patient.otherComorbidities }}</span>
+                    </h3>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="charts">
+              <h2>FILTROS:</h2>
               <div id="selectors" class="row gx-1">
-                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
-                  <h3>
-                    Período:
-                    <select
-                      (change)="selectRange()"
-                      class="form-select"
-                      id="range"
+                <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                  <h3 class="period">Período:</h3>
+                  <mat-form-field class="datepicker" appearance="fill">
+                    <mat-label>Selecione um intervalo de datas</mat-label>
+                    <mat-date-range-input
+                      [formGroup]="filtersForm"
+                      [rangePicker]="picker"
                     >
-                      <option value="lastSevenDays" selected>
-                        Últimos sete dias
-                      </option>
-                      <option value="lastWeek">Semana anterior</option>
-                      <option value="thisMonth">Mês atual</option>
-                      <option value="lastMonth">Mês anterior</option>
-                      <option value="lastTrimester">Trimestre anterior</option>
-                      <option value="lastSemester">Semestre anterior</option>
-                      <option value="thisYear">Este ano</option>
-                      <option value="lastYear">Ano anterior</option>
-                      <option value="total">Total</option>
-                    </select>
-                  </h3>
+                      <input
+                        (ngModelChange)="loadResults()"
+                        matStartDate
+                        placeholder="Data de início"
+                        formControlName="start"
+                      />
+                      <input
+                        (ngModelChange)="loadResults()"
+                        matEndDate
+                        placeholder="Data final"
+                        formControlName="end"
+                      />
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                    <mat-error
+                      *ngIf="
+                        filtersForm.controls.start.hasError(
+                          'matStartDateInvalid'
+                        )
+                      "
+                      >Data inicial inválida</mat-error
+                    >
+                    <mat-error
+                      *ngIf="
+                        filtersForm.controls.end.hasError('matEndDateInvalid')
+                      "
+                      >Data final inválida</mat-error
+                    >
+                  </mat-form-field>
                 </div>
-                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
                   <h3>
                     Tipo de jogo:
-                    <select
-                      (change)="selectGame()"
-                      class="form-select"
-                      id="gameType"
-                    >
-                      <option value="">Jogo das cores</option>
-                      <option value="">Jogo do clique rápido</option>
-                    </select>
+                    <form [formGroup]="filtersForm">
+                      <select
+                        formControlName="gameSelected"
+                        (change)="loadResults()"
+                        class="form-select"
+                        id="gameType"
+                      >
+                        <option value="gameNotSelected">Selecione</option>
+                        <option *ngFor="let game of games" [value]="game._id">
+                          {{ game.name }}
+                        </option>
+                      </select>
+                    </form>
                   </h3>
                 </div>
-                <div class="col-12">
-                  <div class="form-check">
+                <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                  <h3>
+                    Presença de estímulos sonoros:
+                    <form [formGroup]="filtersForm">
+                      <select
+                        formControlName="soundStimuli"
+                        (change)="loadResults()"
+                        class="form-select"
+                        id="gameType"
+                      >
+                        <option value="no">Não</option>
+                        <option value="yes">Sim</option>
+                      </select>
+                    </form>
+                  </h3>
+
+                  <!-- <div class="form-check">
                     <input
                       class="form-check-input"
                       type="checkbox"
@@ -216,22 +264,23 @@
                     <label class="form-check-label" for="soundStimuli">
                       Presença de estímulos sonoros
                     </label>
-                  </div>
+                  </div> -->
                 </div>
               </div>
               <!-- CHARTS -->
-              <div id="chartsrow">
+              <div class="chartsrow" id="chartsrow">
+                <h2>GRÁFICOS DISPONÍVEIS:</h2>
                 <div class="row">
                   <div
                     id="chart1"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                   >
                     <h3 class="chartTitle">{{ labels.charts[0] }}</h3>
                     <div class="chartDays" id="chartDays"></div>
                   </div>
                   <div
                     id="chart2"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                   >
                     <h3 class="chartTitle">{{ labels.charts[1] }}</h3>
                     <div class="chartPoints" id="chartPoints"></div>
@@ -240,7 +289,7 @@
                 <div class="row">
                   <div
                     id="chart3"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                   >
                     <h3 class="chartTitle">{{ labels.charts[2] }}</h3>
                     <div
@@ -250,7 +299,7 @@
                   </div>
                   <div
                     id="chart4"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6"
+                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                   >
                     <h3 class="chartTitle">{{ labels.charts[3] }}</h3>
                     <div

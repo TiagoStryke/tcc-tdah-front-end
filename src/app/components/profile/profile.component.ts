@@ -11,7 +11,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { JWT_token } from 'src/app/services/jwt.token';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { User } from 'src/app/models/user';
+import { User } from 'src/app/components/Interfaces/user';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({

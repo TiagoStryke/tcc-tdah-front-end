@@ -2,8 +2,8 @@ import { DefaultService } from './default.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ResponseApp } from '../models/response';
-import { User } from '../models/user';
+import { ResponseApp } from '../components/Interfaces/response';
+import { User } from '../components/Interfaces/user';
 
 @Injectable({
   providedIn: 'root',

@@ -1,19 +1,18 @@
 import { DefaultService } from './default.service';
+import { Game } from '../components/Interfaces/game';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ResponseApp } from '../components/Interfaces/response';
-import { User } from '../components/Interfaces/user';
-
 @Injectable({
   providedIn: 'root',
 })
-export class PatientService extends DefaultService {
+export class GameService extends DefaultService {
   constructor(private http: HttpClient) {
-    super('patient');
+    super('game');
   }
 
-  listPatients(id: string): Observable<ResponseApp<User>> {
-    return this.http.get<ResponseApp<User>>(`${this.url}/responsible/${id}`);
+  listGames(): Observable<ResponseApp<Game>> {
+    return this.http.get<ResponseApp<Game>>(`${this.url}`);
   }
 }
