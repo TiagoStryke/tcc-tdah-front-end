@@ -26,18 +26,16 @@ import { jsPDF } from 'jspdf';
 export class DashboardComponent implements OnInit {
   searchText = '';
   patient: Patient = {};
-  charts: any = mockData.lastSevenDays; //TODO - delete mock
   userName: string | undefined = '';
   listPatients: any;
-  soundSelect = { sound: false };
   chartDays!: chartDaysBuilder;
   chartDaysRender!: ApexCharts;
   chartPoints!: chartBarBuilder;
-  chartPointsRender!: ApexCharts;
-  chartTimeAssignment!: chartBarBuilder;
-  chartTimeAssignmentRender!: ApexCharts;
-  chartTimeClickColor!: chartBarBuilder;
-  chartTimeClickColorRender!: ApexCharts;
+  // chartPointsRender!: ApexCharts;
+  // chartTimeAssignment!: chartBarBuilder;
+  // chartTimeAssignmentRender!: ApexCharts;
+  // chartTimeClickColor!: chartBarBuilder;
+  // chartTimeClickColorRender!: ApexCharts;
   token = localStorage.getItem('token');
   user: any;
   userId: any;
@@ -75,9 +73,10 @@ export class DashboardComponent implements OnInit {
       Validators.required,
       this.gameSelectedValidator,
     ]),
-    soundStimuli: new FormControl('no', [Validators.required]),
+    soundStimuli: new FormControl('false', [Validators.required]),
   });
-  gameResults: GameResults | undefined;
+  gameResults: any;
+  ChartsAvailable: any;
 
   constructor(
     private jwtToken: JWT_token,
@@ -92,13 +91,36 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getUser();
     this.getListOfPatients();
-    this.loadCharts();
-    this.renderCharts();
     this.listGames();
   }
 
+  ifChecked(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    const isChecked = checkbox.checked;
+
+    if (isChecked) {
+      if (this.filtersForm.value.start && this.filtersForm.value.end) {
+        this.chartDays = new chartDaysBuilder({
+          days: this.gameResults.length,
+          percentage:
+            (this.gameResults.length * 100) /
+            this.subtractDates(
+              new Date(this.filtersForm.value.start),
+              new Date(this.filtersForm.value.end)
+            ),
+        });
+        this.chartDaysRender = new ApexCharts(
+          document.querySelector('#chartDays'),
+          this.chartDays.getOptionsChartDays()
+        );
+        this.chartDaysRender.render();
+      }
+    } else {
+      console.log('Checkbox is not checked');
+    }
+  }
+
   loadResults() {
-    console.log(this.filtersForm.value.start);
     if (this.filtersForm.valid) {
       this.getGameResults();
     }
@@ -108,20 +130,26 @@ export class DashboardComponent implements OnInit {
     if (
       this.filtersForm.value.start != null &&
       this.filtersForm.value.end != null &&
-      this.filtersForm.value.gameSelected != null
+      this.filtersForm.value.gameSelected != null &&
+      this.filtersForm.value.soundStimuli != null
     ) {
       this.rService
-        .listResultsbyDate(
+        .listResultsbyDate2(
           this.patientId,
           this.filtersForm.value.gameSelected,
           new Date(this.filtersForm.value.start).toISOString(),
-          new Date(this.filtersForm.value.end).toISOString()
+          new Date(this.filtersForm.value.end).toISOString(),
+          this.filtersForm.value.soundStimuli
         )
         .subscribe((res) => {
           this.gameResults = res.body;
-          console.log(this.gameResults);
         });
     }
+  }
+
+  subtractDates(date1: Date, date2: Date): number {
+    const timeDiff = Math.abs(date2.getTime() - date1.getTime());
+    return timeDiff / (1000 * 3600 * 24);
   }
 
   gameSelectedValidator(control: FormControl) {
@@ -145,6 +173,18 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  loadChartsAvailable() {
+    const selectedGame = this.games.find(
+      (game: { _id: string | null | undefined }) =>
+        game._id === this.filtersForm.value.gameSelected
+    );
+    if (selectedGame) {
+      this.ChartsAvailable = selectedGame.resultsStructure.map(
+        (object: { portugueseTitle: any }) => object.portugueseTitle
+      );
+    }
+  }
+
   listGames() {
     this.gService.listGames().subscribe((res) => {
       this.games = res.body;
@@ -165,38 +205,24 @@ export class DashboardComponent implements OnInit {
     return array.findIndex((item) => item._id === id);
   }
 
-  selectRange() {
-    //TODO - adjust this with the backend calls
-    let range = document.querySelector('#range') as HTMLInputElement;
-
-    const rangevalue = range.value as keyof typeof mockData;
-
-    this.charts = mockData[rangevalue];
-    this.loadCharts();
-    this.updateCharts();
-  }
-
   loadCharts() {
     //TODO - get data to plot charts on backend
-    this.chartDays = new chartDaysBuilder(this.charts.chartDaysData);
-
-    this.chartPoints = new chartBarBuilder(
-      this.soundSelect,
-      { type: 'points' },
-      this.charts.chartPointsData
-    );
-
-    this.chartTimeAssignment = new chartBarBuilder(
-      this.soundSelect,
-      { type: 'time' },
-      this.charts.chartTimeAssignmentData
-    );
-
-    this.chartTimeClickColor = new chartBarBuilder(
-      this.soundSelect,
-      { type: 'time' },
-      this.charts.chartTimeClickColorData
-    );
+    // this.chartDays = new chartDaysBuilder(this.charts.chartDaysData);
+    // this.chartPoints = new chartBarBuilder(
+    //   this.soundSelect,
+    //   { type: 'points' },
+    //   this.charts.chartPointsData
+    // );
+    // this.chartTimeAssignment = new chartBarBuilder(
+    //   this.soundSelect,
+    //   { type: 'time' },
+    //   this.charts.chartTimeAssignmentData
+    // );
+    // this.chartTimeClickColor = new chartBarBuilder(
+    //   this.soundSelect,
+    //   { type: 'time' },
+    //   this.charts.chartTimeClickColorData
+    // );
   }
 
   renderCharts() {
@@ -206,98 +232,93 @@ export class DashboardComponent implements OnInit {
     );
     this.chartDaysRender.render();
 
-    this.chartPointsRender = new ApexCharts(
-      document.querySelector('#chartPoints'),
-      this.chartPoints.getOptionsChartPoints()
-    );
-    this.chartPointsRender.render();
+    // this.chartPointsRender = new ApexCharts(
+    //   document.querySelector('#chartPoints'),
+    //   this.chartPoints.getOptionsChartPoints()
+    // );
+    // this.chartPointsRender.render();
 
-    this.chartTimeAssignmentRender = new ApexCharts(
-      document.querySelector('#chartTimeAssignment'),
-      this.chartTimeAssignment.getOptionsChartPoints()
-    );
-    this.chartTimeAssignmentRender.render();
+    // this.chartTimeAssignmentRender = new ApexCharts(
+    //   document.querySelector('#chartTimeAssignment'),
+    //   this.chartTimeAssignment.getOptionsChartPoints()
+    // );
+    // this.chartTimeAssignmentRender.render();
 
-    this.chartTimeClickColorRender = new ApexCharts(
-      document.querySelector('#chartTimeClickColor'),
-      this.chartTimeClickColor.getOptionsChartPoints()
-    );
-    this.chartTimeClickColorRender.render();
+    // this.chartTimeClickColorRender = new ApexCharts(
+    //   document.querySelector('#chartTimeClickColor'),
+    //   this.chartTimeClickColor.getOptionsChartPoints()
+    // );
+    // this.chartTimeClickColorRender.render();
   }
-
+  //TODO i think this is not needed
   updateCharts() {
     this.chartDaysRender.updateOptions(
       this.chartDays.getOptionsChartDays(),
       true
     );
-    this.chartPointsRender.updateOptions(
-      this.chartPoints.getOptionsChartPoints()
-    );
+    // this.chartPointsRender.updateOptions(
+    //   this.chartPoints.getOptionsChartPoints()
+    // );
 
-    this.chartTimeAssignmentRender.updateOptions(
-      this.chartTimeAssignment.getOptionsChartPoints()
-    );
+    // this.chartTimeAssignmentRender.updateOptions(
+    //   this.chartTimeAssignment.getOptionsChartPoints()
+    // );
 
-    this.chartTimeClickColorRender.updateOptions(
-      this.chartTimeClickColor.getOptionsChartPoints()
-    );
+    // this.chartTimeClickColorRender.updateOptions(
+    //   this.chartTimeClickColor.getOptionsChartPoints()
+    // );
   }
 
   downloadPdf() {
     //FIXME - verify if this is the data needed, format the data and add to pdf
-    const doc = new jsPDF();
-    //write the pdf file
-    doc.insertPage(1);
-    doc.setPage(1);
-    doc.setFontSize(10);
-    doc.text('Relatório de Terapia:', 100, 10, { align: 'center' });
-    //FIXME - this whole part is repeating itself put it on a loop
-    doc.text(this.labels.info[0], 10, 20);
-    doc.text(this.labels.info[1], 10, 30);
-    doc.text(this.labels.info[2], 10, 40);
-    doc.text(this.labels.info[3], 10, 50);
-    doc.text(this.labels.info[4], 10, 60);
-    doc.text(this.labels.info[5], 10, 70);
-    doc.text(this.labels.info[6], 10, 80);
-    //TODO - add the data of selected range with if statement
-    doc.text(this.labels.info[7], 10, 90);
-    //TODO - add the data of selected checkbox with if statement
-    doc.text(this.labels.info[8], 10, 100);
-
-    let posY = [10, 74.25, 148.5, 222.75];
-    let posText = [88, 102, 90, 90];
-
-    //FIXME - this whole part is repeating itself put it on a loop
-    this.chartDaysRender.dataURI().then((data) => {
-      let imgURI = Object.values(data);
-      doc.setPage(2);
-      //TODO - calculate the size to aways be round
-      doc.addImage(imgURI[0], 'PNG', 60, posY[0], 100, 64.25);
-      doc.text(this.labels.charts[0], posText[0], posY[0]);
-      this.chartPointsRender.dataURI().then((data) => {
-        let imgURI = Object.values(data);
-
-        doc.addImage(imgURI[0], 'PNG', 60, posY[1], 100, 64.25);
-        doc.text(this.labels.charts[1], posText[1], posY[1]);
-        this.chartTimeAssignmentRender.dataURI().then((data) => {
-          let imgURI = Object.values(data);
-
-          doc.addImage(imgURI[0], 'PNG', 60, posY[2], 100, 64.25);
-          doc.text(this.labels.charts[2], posText[2], posY[2]);
-          this.chartTimeClickColorRender
-            .dataURI()
-            .then((data) => {
-              let imgURI = Object.values(data);
-
-              doc.addImage(imgURI[0], 'PNG', 60, posY[3], 100, 64.25);
-              doc.text(this.labels.charts[3], posText[3], posY[3]);
-            })
-            .finally(() => {
-              doc.save('relatorio.pdf');
-            });
-        });
-      });
-    });
+    // const doc = new jsPDF();
+    // //write the pdf file
+    // doc.insertPage(1);
+    // doc.setPage(1);
+    // doc.setFontSize(10);
+    // doc.text('Relatório de Terapia:', 100, 10, { align: 'center' });
+    // //FIXME - this whole part is repeating itself put it on a loop
+    // doc.text(this.labels.info[0], 10, 20);
+    // doc.text(this.labels.info[1], 10, 30);
+    // doc.text(this.labels.info[2], 10, 40);
+    // doc.text(this.labels.info[3], 10, 50);
+    // doc.text(this.labels.info[4], 10, 60);
+    // doc.text(this.labels.info[5], 10, 70);
+    // doc.text(this.labels.info[6], 10, 80);
+    // //TODO - add the data of selected range with if statement
+    // doc.text(this.labels.info[7], 10, 90);
+    // //TODO - add the data of selected checkbox with if statement
+    // doc.text(this.labels.info[8], 10, 100);
+    // let posY = [10, 74.25, 148.5, 222.75];
+    // let posText = [88, 102, 90, 90];
+    // //FIXME - this whole part is repeating itself put it on a loop
+    // this.chartDaysRender.dataURI().then((data) => {
+    //   let imgURI = Object.values(data);
+    //   doc.setPage(2);
+    //   //TODO - calculate the size to aways be round
+    //   doc.addImage(imgURI[0], 'PNG', 60, posY[0], 100, 64.25);
+    //   doc.text(this.labels.charts[0], posText[0], posY[0]);
+    //   this.chartPointsRender.dataURI().then((data) => {
+    //     let imgURI = Object.values(data);
+    //     doc.addImage(imgURI[0], 'PNG', 60, posY[1], 100, 64.25);
+    //     doc.text(this.labels.charts[1], posText[1], posY[1]);
+    //     this.chartTimeAssignmentRender.dataURI().then((data) => {
+    //       let imgURI = Object.values(data);
+    //       doc.addImage(imgURI[0], 'PNG', 60, posY[2], 100, 64.25);
+    //       doc.text(this.labels.charts[2], posText[2], posY[2]);
+    //       this.chartTimeClickColorRender
+    //         .dataURI()
+    //         .then((data) => {
+    //           let imgURI = Object.values(data);
+    //           doc.addImage(imgURI[0], 'PNG', 60, posY[3], 100, 64.25);
+    //           doc.text(this.labels.charts[3], posText[3], posY[3]);
+    //         })
+    //         .finally(() => {
+    //           doc.save('relatorio.pdf');
+    //         });
+    //     });
+    //   });
+    // });
   }
 
   //TODO do this better - use .classList.toggle

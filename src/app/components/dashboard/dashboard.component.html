@@ -226,6 +226,7 @@
                       <select
                         formControlName="gameSelected"
                         (change)="loadResults()"
+                        (change)="loadChartsAvailable()"
                         class="form-select"
                         id="gameType"
                       >
@@ -247,24 +248,11 @@
                         class="form-select"
                         id="gameType"
                       >
-                        <option value="no">Não</option>
-                        <option value="yes">Sim</option>
+                        <option value="false">Não</option>
+                        <option value="true">Sim</option>
                       </select>
                     </form>
                   </h3>
-
-                  <!-- <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="soundStimuli"
-                      (change)="soundStimuliCheck()"
-                    />
-                    <label class="form-check-label" for="soundStimuli">
-                      Presença de estímulos sonoros
-                    </label>
-                  </div> -->
                 </div>
               </div>
               <!-- CHARTS -->
@@ -272,21 +260,42 @@
                 <h2>GRÁFICOS DISPONÍVEIS:</h2>
                 <div class="row">
                   <div
+                    class="chartTitle col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
+                  >
+                    <input
+                      (change)="ifChecked($event)"
+                      class="form-check-input"
+                      type="checkbox"
+                    />
+                    <h3>{{ labels.charts[0] }}</h3>
+                  </div>
+                  <div *ngFor="let portugueseTitle of ChartsAvailable">
+                    <div
+                      class="chartTitle col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
+                    >
+                      <input
+                        (change)="ifChecked($event)"
+                        class="form-check-input"
+                        type="checkbox"
+                      />
+                      <h3>{{ portugueseTitle }}</h3>
+                    </div>
+                  </div>
+                  <div
                     id="chart1"
                     class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                   >
-                    <h3 class="chartTitle">{{ labels.charts[0] }}</h3>
                     <div class="chartDays" id="chartDays"></div>
                   </div>
-                  <div
+                  <!-- <div
                     id="chart2"
                     class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                   >
                     <h3 class="chartTitle">{{ labels.charts[1] }}</h3>
                     <div class="chartPoints" id="chartPoints"></div>
-                  </div>
+                  </div> -->
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                   <div
                     id="chart3"
                     class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
@@ -307,7 +316,7 @@
                       id="chartTimeClickColor"
                     ></div>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </main>

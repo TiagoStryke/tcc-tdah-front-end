@@ -17,10 +17,23 @@ export class GameResultsService extends DefaultService {
     patientId: string,
     gameId: string,
     dateStart: string,
-    dateEnd: string
+    dateEnd: string,
+    sound: string
   ): Observable<ResponseApp<GameResults>> {
     return this.http.get<ResponseApp<GameResults>>(
-      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}`
+      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}`
+    );
+  }
+
+  listResultsbyDate2(
+    patientId: string,
+    gameId: string,
+    dateStart: string,
+    dateEnd: string,
+    sound: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}`
     );
   }
 }

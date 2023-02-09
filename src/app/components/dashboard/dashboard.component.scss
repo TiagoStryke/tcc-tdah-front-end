@@ -192,10 +192,6 @@ aside .bottom {
   padding-top: 20px;
 }
 
-.charts .chartTitle {
-  text-align: center;
-}
-
 .info h2 {
   margin-top: 2rem;
 }
@@ -244,26 +240,23 @@ mat-date-range-input {
   font-size: $standard-font-size;
 }
 
-.form-check {
-  padding: 1rem;
-}
-
 .form-check-input:checked {
   background-color: $color-primary;
   border-color: $color-primary;
+}
+
+.chartTitle {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .form-check-input {
   border-style: solid;
   border-width: 2px;
   border-color: $color-info-light;
-}
-
-.form-check-label {
-  margin-bottom: 0;
-  font-size: $standard-font-size;
-  font-weight: 500;
-  color: $color-dark;
+  padding: 0.5rem;
+  margin-right: 1rem;
 }
 
 // scroll bar edits
