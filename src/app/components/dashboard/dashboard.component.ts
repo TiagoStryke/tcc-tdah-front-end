@@ -188,12 +188,12 @@ export class DashboardComponent implements OnInit {
     let info = document.querySelector('.filtersSelected');
     let warning = document.querySelector('.noFiltersSelected');
 
-    if (
-      this.filtersForm.valid &&
-      warning &&
-      !warning.classList.contains('hidden') &&
-      info
-    ) {
+    if (this.filtersForm.valid) {
+      if (warning && !warning.classList.contains('hidden') && info) {
+        this.toggleHidden(warning);
+        this.toggleHidden(info);
+      }
+    } else if (warning && info) {
       this.toggleHidden(warning);
       this.toggleHidden(info);
     }
