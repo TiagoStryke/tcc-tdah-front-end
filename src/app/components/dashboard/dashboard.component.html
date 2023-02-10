@@ -176,7 +176,13 @@
             </div>
             <div class="charts">
               <h2>FILTROS:</h2>
-              <div id="selectors" class="row gx-1">
+              <div class="noPatientSelectedFilters">
+                <h3>Selecione um paciente da lista para ver os filtros</h3>
+              </div>
+              <div
+                id="selectors"
+                class="row gx-1 patientSelectedFilters hidden"
+              >
                 <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
                   <h3 class="period">Período:</h3>
                   <mat-form-field class="datepicker" appearance="fill">
@@ -186,13 +192,13 @@
                       [rangePicker]="picker"
                     >
                       <input
-                        (ngModelChange)="loadResults()"
+                        (ngModelChange)="filtersChange()"
                         matStartDate
                         placeholder="Data de início"
                         formControlName="start"
                       />
                       <input
-                        (ngModelChange)="loadResults()"
+                        (ngModelChange)="filtersChange()"
                         matEndDate
                         placeholder="Data final"
                         formControlName="end"
@@ -225,8 +231,7 @@
                     <form [formGroup]="filtersForm">
                       <select
                         formControlName="gameSelected"
-                        (change)="loadResults()"
-                        (change)="loadChartsAvailable()"
+                        (change)="filtersChange()"
                         class="form-select"
                         id="gameType"
                       >
@@ -244,7 +249,7 @@
                     <form [formGroup]="filtersForm">
                       <select
                         formControlName="soundStimuli"
-                        (change)="loadResults()"
+                        (change)="filtersChange()"
                         class="form-select"
                         id="gameType"
                       >
@@ -258,18 +263,13 @@
               <!-- CHARTS -->
               <div class="chartsrow" id="chartsrow">
                 <h2>GRÁFICOS DISPONÍVEIS:</h2>
-                <div class="row">
+                <div class="noFiltersSelected">
+                  <h3>Selecione os filtros para ver os gráficos disponíveis</h3>
+                </div>
+                <div class="row filtersSelected hidden">
                   <div
-                    class="chartTitle col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
+                    *ngFor="let item of chartsTitlesAndInputIds; let i = index"
                   >
-                    <input
-                      (change)="ifChecked($event)"
-                      class="form-check-input"
-                      type="checkbox"
-                    />
-                    <h3>{{ labels.charts[0] }}</h3>
-                  </div>
-                  <div *ngFor="let portugueseTitle of ChartsAvailable">
                     <div
                       class="chartTitle col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                     >
@@ -277,46 +277,18 @@
                         (change)="ifChecked($event)"
                         class="form-check-input"
                         type="checkbox"
+                        id="inputCheck{{ item.id }}"
                       />
-                      <h3>{{ portugueseTitle }}</h3>
+                      <h3>{{ item.title }}</h3>
+                    </div>
+                    <div
+                      id="chart{{ i + 1 }}"
+                      class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
+                    >
+                      <div id="{{ item.id }}"></div>
                     </div>
                   </div>
-                  <div
-                    id="chart1"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
-                  >
-                    <div class="chartDays" id="chartDays"></div>
-                  </div>
-                  <!-- <div
-                    id="chart2"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
-                  >
-                    <h3 class="chartTitle">{{ labels.charts[1] }}</h3>
-                    <div class="chartPoints" id="chartPoints"></div>
-                  </div> -->
                 </div>
-                <!-- <div class="row">
-                  <div
-                    id="chart3"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
-                  >
-                    <h3 class="chartTitle">{{ labels.charts[2] }}</h3>
-                    <div
-                      class="chartTimeAssignment"
-                      id="chartTimeAssignment"
-                    ></div>
-                  </div>
-                  <div
-                    id="chart4"
-                    class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
-                  >
-                    <h3 class="chartTitle">{{ labels.charts[3] }}</h3>
-                    <div
-                      class="chartTimeClickColor"
-                      id="chartTimeClickColor"
-                    ></div>
-                  </div>
-                </div> -->
               </div>
             </div>
           </main>

@@ -56,13 +56,6 @@ export class DashboardComponent implements OnInit {
       'Período: ',
       'Presença de estímulos sonoros: ',
     ],
-    charts: [
-      'Dias usando a plataforma:',
-      'Pontuação:',
-      'Tempo total para cumprir a tarefa:',
-      'Tempo para clicar em uma cor:',
-    ],
-    select: [],
   };
   games: any = [{ name: 'Nenhum jogo cadastrado' }];
 
@@ -76,7 +69,7 @@ export class DashboardComponent implements OnInit {
     soundStimuli: new FormControl('false', [Validators.required]),
   });
   gameResults: any;
-  ChartsAvailable: any;
+  chartsTitlesAndInputIds: any;
 
   constructor(
     private jwtToken: JWT_token,
@@ -94,27 +87,35 @@ export class DashboardComponent implements OnInit {
     this.listGames();
   }
 
+  filtersChange() {
+    this.getChartsTitlesAndInputIds();
+    this.loadResults();
+    this.showCharts();
+  }
+
   ifChecked(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     const isChecked = checkbox.checked;
 
     if (isChecked) {
-      if (this.filtersForm.value.start && this.filtersForm.value.end) {
-        this.chartDays = new chartDaysBuilder({
-          days: this.gameResults.length,
-          percentage:
-            (this.gameResults.length * 100) /
-            this.subtractDates(
-              new Date(this.filtersForm.value.start),
-              new Date(this.filtersForm.value.end)
-            ),
-        });
-        this.chartDaysRender = new ApexCharts(
-          document.querySelector('#chartDays'),
-          this.chartDays.getOptionsChartDays()
-        );
-        this.chartDaysRender.render();
-      }
+      // if (this.filtersForm.value.start && this.filtersForm.value.end) {
+      //   this.chartDays = new chartDaysBuilder({
+      //     days: this.gameResults.length,
+      //     //TODO count the days not the lenght of the array
+      //     percentage:
+      //       (this.gameResults.length * 100) /
+      //       this.subtractDates(
+      //         new Date(this.filtersForm.value.start),
+      //         new Date(this.filtersForm.value.end)
+      //       ),
+      //   });
+      //   this.chartDaysRender = new ApexCharts(
+      //     document.querySelector('#chartDays'),
+      //     this.chartDays.getOptionsChartDays()
+      //   );
+      //   this.chartDaysRender.render();
+      // }
+      console.log(event.target);
     } else {
       console.log('Checkbox is not checked');
     }
@@ -163,7 +164,7 @@ export class DashboardComponent implements OnInit {
     element.classList.toggle('hidden');
   }
 
-  showInformation() {
+  showPatientInformation() {
     let info = document.querySelector('.patientSelected');
     let warning = document.querySelector('.noPatientSelected');
 
@@ -173,16 +174,58 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  loadChartsAvailable() {
+  showFilters() {
+    let info = document.querySelector('.patientSelectedFilters');
+    let warning = document.querySelector('.noPatientSelectedFilters');
+
+    if (warning && !warning.classList.contains('hidden') && info) {
+      this.toggleHidden(warning);
+      this.toggleHidden(info);
+    }
+  }
+
+  showCharts() {
+    let info = document.querySelector('.filtersSelected');
+    let warning = document.querySelector('.noFiltersSelected');
+
+    if (
+      this.filtersForm.valid &&
+      warning &&
+      !warning.classList.contains('hidden') &&
+      info
+    ) {
+      this.toggleHidden(warning);
+      this.toggleHidden(info);
+    }
+  }
+
+  getChartsTitlesAndInputIds() {
     const selectedGame = this.games.find(
       (game: { _id: string | null | undefined }) =>
         game._id === this.filtersForm.value.gameSelected
     );
+
     if (selectedGame) {
-      this.ChartsAvailable = selectedGame.resultsStructure.map(
+      let chartsTitles = selectedGame.resultsStructure.map(
         (object: { portugueseTitle: any }) => object.portugueseTitle
       );
+      let inputIds = selectedGame.resultsStructure.map(
+        (object: { fieldName: any }) => object.fieldName
+      );
+
+      this.chartsTitlesAndInputIds = [
+        {
+          title: 'Dias usando a plataforma',
+          id: 'daysLogged',
+        },
+      ].concat(
+        chartsTitles.map((title: any, index: string | number) => ({
+          title,
+          id: inputIds[index],
+        }))
+      );
     }
+    console.log(this.chartsTitlesAndInputIds);
   }
 
   listGames() {
@@ -197,7 +240,8 @@ export class DashboardComponent implements OnInit {
       this.controlDisplay();
     }
     this.patientId = click.target.id;
-    this.showInformation();
+    this.showPatientInformation();
+    this.showFilters();
     this.loadPatientInfo();
   }
 
