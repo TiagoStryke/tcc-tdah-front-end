@@ -13,19 +13,7 @@ export class GameResultsService extends DefaultService {
     super('game-result');
   }
 
-  listResultsbyDate(
-    patientId: string,
-    gameId: string,
-    dateStart: string,
-    dateEnd: string,
-    sound: string
-  ): Observable<ResponseApp<GameResults>> {
-    return this.http.get<ResponseApp<GameResults>>(
-      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}`
-    );
-  }
-
-  listResultsbyDate2(
+  listResultsbyPeriod(
     patientId: string,
     gameId: string,
     dateStart: string,
@@ -34,6 +22,42 @@ export class GameResultsService extends DefaultService {
   ): Observable<any> {
     return this.http.get<any>(
       `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}`
+    );
+  }
+
+  listResultsAverage(
+    patientId: string,
+    gameId: string,
+    dateStart: string,
+    dateEnd: string,
+    sound: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}/average`
+    );
+  }
+
+  listResultsMonthAverage(
+    patientId: string,
+    gameId: string,
+    dateStart: string,
+    dateEnd: string,
+    sound: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}/monthaverage`
+    );
+  }
+
+  listResultsYearAverage(
+    patientId: string,
+    gameId: string,
+    dateStart: string,
+    dateEnd: string,
+    sound: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}/yearaverage`
     );
   }
 }

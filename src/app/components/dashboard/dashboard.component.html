@@ -192,13 +192,13 @@
                       [rangePicker]="picker"
                     >
                       <input
-                        (ngModelChange)="filtersChange()"
+                        (ngModelChange)="filtersForm.valid && filtersChange()"
                         matStartDate
                         placeholder="Data de início"
                         formControlName="start"
                       />
                       <input
-                        (ngModelChange)="filtersChange()"
+                        (ngModelChange)="filtersForm.valid && filtersChange()"
                         matEndDate
                         placeholder="Data final"
                         formControlName="end"
@@ -231,7 +231,7 @@
                     <form [formGroup]="filtersForm">
                       <select
                         formControlName="gameSelected"
-                        (change)="filtersChange()"
+                        (change)="filtersForm.valid && filtersChange()"
                         class="form-select"
                         id="gameType"
                       >
@@ -253,8 +253,13 @@
                         class="form-select"
                         id="gameType"
                       >
-                        <option value="false">Não</option>
-                        <option value="true">Sim</option>
+                        <option value="false">
+                          Sem a presença de estímulos sonoros
+                        </option>
+                        <option value="true">
+                          Com a presença de estímulos sonoros
+                        </option>
+                        <option value="both">Ambos - Comparar</option>
                       </select>
                     </form>
                   </h3>
@@ -267,9 +272,7 @@
                   <h3>Selecione os filtros para ver os gráficos disponíveis</h3>
                 </div>
                 <div class="row filtersSelected hidden">
-                  <div
-                    *ngFor="let item of chartsTitlesAndInputIds; let i = index"
-                  >
+                  <div *ngFor="let item of chartsObj; let i = index">
                     <div
                       class="chartTitle col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                     >
@@ -277,15 +280,15 @@
                         (change)="ifChecked($event)"
                         class="form-check-input"
                         type="checkbox"
-                        id="inputCheck{{ item.id }}"
+                        id="{{ item.id }}"
                       />
                       <h3>{{ item.title }}</h3>
                     </div>
                     <div
-                      id="chart{{ i + 1 }}"
+                      id="chart{{ i }}"
                       class="col-sm-12 col-md-12 col-lg-6 col-xl-12 col-xxl-12"
                     >
-                      <div id="{{ item.id }}"></div>
+                      <div id="chart{{ item.id }}"></div>
                     </div>
                   </div>
                 </div>

@@ -1,8 +1,10 @@
 import * as ApexCharts from 'apexcharts';
 import * as mockData from 'src/app/helpers/mockData';
+import * as moment from 'moment';
 
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { catchError, of, tap } from 'rxjs';
 import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
 import { DateRange } from '@angular/material/datepicker';
@@ -16,6 +18,7 @@ import { PatientService } from 'src/app/services/patient.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/services/user.service';
+import { interfaceChartBar } from '../../models/charts-options';
 import { jsPDF } from 'jspdf';
 
 @Component({
@@ -28,22 +31,12 @@ export class DashboardComponent implements OnInit {
   patient: Patient = {};
   userName: string | undefined = '';
   listPatients: any;
-  chartDays!: chartDaysBuilder;
-  chartDaysRender!: ApexCharts;
-  chartPoints!: chartBarBuilder;
-  // chartPointsRender!: ApexCharts;
-  // chartTimeAssignment!: chartBarBuilder;
-  // chartTimeAssignmentRender!: ApexCharts;
-  // chartTimeClickColor!: chartBarBuilder;
-  // chartTimeClickColorRender!: ApexCharts;
   token = localStorage.getItem('token');
   user: any;
   userId: any;
   profilePhoto: string | undefined;
   searchBar: boolean = true;
-  main: boolean = true;
   patientId: string = '';
-  picker: any;
   labels = {
     info: [
       'Nome: ',
@@ -58,7 +51,6 @@ export class DashboardComponent implements OnInit {
     ],
   };
   games: any = [{ name: 'Nenhum jogo cadastrado' }];
-
   filtersForm = new FormGroup({
     start: new FormControl('', [Validators.required]),
     end: new FormControl('', [Validators.required]),
@@ -69,7 +61,9 @@ export class DashboardComponent implements OnInit {
     soundStimuli: new FormControl('false', [Validators.required]),
   });
   gameResults: any;
-  chartsTitlesAndInputIds: any;
+  categories: string[] = [];
+  series: { name: string; data: (number | undefined)[] }[] = [];
+  chartsObj: any;
 
   constructor(
     private jwtToken: JWT_token,
@@ -88,64 +82,171 @@ export class DashboardComponent implements OnInit {
   }
 
   filtersChange() {
-    this.getChartsTitlesAndInputIds();
-    this.loadResults();
+    this.destroyAllCharts();
+    this.getCharts();
+    this.getGameResults();
     this.showCharts();
+    this.generateXaxisCategories();
+    this.loadResults();
   }
 
   ifChecked(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     const isChecked = checkbox.checked;
-
+    const index = this.chartsObj.findIndex(
+      (item: { id: string | null }) => item.id === checkbox.getAttribute('id')
+    );
     if (isChecked) {
-      // if (this.filtersForm.value.start && this.filtersForm.value.end) {
-      //   this.chartDays = new chartDaysBuilder({
-      //     days: this.gameResults.length,
-      //     //TODO count the days not the lenght of the array
-      //     percentage:
-      //       (this.gameResults.length * 100) /
-      //       this.subtractDates(
-      //         new Date(this.filtersForm.value.start),
-      //         new Date(this.filtersForm.value.end)
-      //       ),
-      //   });
-      //   this.chartDaysRender = new ApexCharts(
-      //     document.querySelector('#chartDays'),
-      //     this.chartDays.getOptionsChartDays()
-      //   );
-      //   this.chartDaysRender.render();
-      // }
-      console.log(event.target);
+      this.renderChart(index);
     } else {
-      console.log('Checkbox is not checked');
-    }
-  }
-
-  loadResults() {
-    if (this.filtersForm.valid) {
-      this.getGameResults();
+      this.destroyChart(index);
     }
   }
 
   getGameResults() {
     if (
-      this.filtersForm.value.start != null &&
-      this.filtersForm.value.end != null &&
-      this.filtersForm.value.gameSelected != null &&
-      this.filtersForm.value.soundStimuli != null
+      this.filtersForm.valid &&
+      this.filtersForm.value.gameSelected &&
+      this.filtersForm.value.soundStimuli
     ) {
       this.rService
-        .listResultsbyDate2(
+        .listResultsbyPeriod(
           this.patientId,
           this.filtersForm.value.gameSelected,
-          new Date(this.filtersForm.value.start).toISOString(),
-          new Date(this.filtersForm.value.end).toISOString(),
+          moment(this.filtersForm.value.start)
+            .startOf('day')
+            .utc()
+            .toISOString(),
+          moment(this.filtersForm.value.end).endOf('day').utc().toISOString(),
           this.filtersForm.value.soundStimuli
+        )
+        .pipe(
+          tap((data) => {
+            console.log(data);
+          }),
+          catchError((error) => {
+            console.error(error);
+            return of(null);
+          })
         )
         .subscribe((res) => {
           this.gameResults = res.body;
         });
     }
+  }
+
+  loadResults() {
+    if (this.filtersForm.valid) {
+      console.log('results = ', this.gameResults);
+    }
+
+    //TODO correct results undefined
+    if (this.chartsObj && this.gameResults) {
+      this.chartsObj.forEach(
+        (
+          obj: { chart: chartDaysBuilder | chartBarBuilder; measuredIn: any },
+          index: number
+        ) => {
+          if (index === 0) {
+            obj.chart = new chartDaysBuilder({
+              days: this.countDays(this.gameResults),
+              percentage: this.calculatePercentage(),
+            });
+          } else {
+            obj.chart = new chartBarBuilder(
+              {
+                sound: this.filtersForm.value.soundStimuli
+                  ? this.filtersForm.value.soundStimuli
+                  : '',
+              },
+              { type: obj.measuredIn },
+              {
+                xaxisCategories: this.categories,
+                series: this.series,
+              }
+            );
+          }
+        }
+      );
+    }
+  }
+
+  generateSeries() {
+    this.series = [
+      { name: 'Pontos', data: [50, 0, 0, 30, 0, 0, 0, 120] },
+      { name: 'Estímulos sonoros', data: [60, , , 40, , , 130] },
+    ];
+  }
+
+  generateXaxisCategories() {
+    if (this.filtersForm.valid) {
+      const start = moment(this.filtersForm.value.start);
+      const end = moment(this.filtersForm.value.end);
+      this.categories = [];
+
+      if (end.diff(start, 'years') > 2) {
+        while (start.year() <= end.year()) {
+          this.categories.push(start.year().toString());
+          start.add(1, 'year');
+        }
+      } else if (end.diff(start, 'months') > 2) {
+        while (start <= end) {
+          this.categories.push(start.locale('pt-br').format('MMM'));
+          start.add(1, 'month');
+        }
+      } else {
+        while (start <= end) {
+          this.categories.push(start.locale('pt-br').format('DD MMM'));
+          start.add(1, 'day');
+        }
+      }
+    }
+  }
+
+  renderChart(index: number) {
+    this.chartsObj[index]['chartRender'] = new ApexCharts(
+      document.querySelector('#chart' + this.chartsObj[index].id),
+      index === 0
+        ? this.chartsObj[index].chart.getOptionsChartDays()
+        : this.chartsObj[index].chart.getOptionsChartPoints()
+    );
+
+    this.chartsObj[index].chartRender.render();
+  }
+
+  destroyChart(index: number) {
+    this.chartsObj[index].chartRender.destroy();
+  }
+
+  destroyAllCharts() {
+    if (this.chartsObj) {
+      this.chartsObj.forEach(
+        (obj: { chartRender: { destroy: () => void } }) => {
+          if (obj.chartRender) {
+            obj.chartRender.destroy();
+          }
+        }
+      );
+    }
+  }
+
+  calculatePercentage() {
+    let percentage =
+      (this.countDays(this.gameResults) * 100) /
+      moment(this.filtersForm.value.end).diff(
+        moment(this.filtersForm.value.start),
+        'days'
+      );
+    return percentage;
+  }
+
+  countDays(results: any[]): number {
+    const days = new Set<string>();
+    results.forEach((result) => {
+      const day = result.date.substring(0, 10);
+      days.add(day);
+    });
+    return days.size;
   }
 
   subtractDates(date1: Date, date2: Date): number {
@@ -188,7 +289,7 @@ export class DashboardComponent implements OnInit {
     let info = document.querySelector('.filtersSelected');
     let warning = document.querySelector('.noFiltersSelected');
 
-    if (this.filtersForm.valid) {
+    if (this.filtersForm.valid && this.gameResults) {
       if (warning && !warning.classList.contains('hidden') && info) {
         this.toggleHidden(warning);
         this.toggleHidden(info);
@@ -199,7 +300,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  getChartsTitlesAndInputIds() {
+  getCharts() {
     const selectedGame = this.games.find(
       (game: { _id: string | null | undefined }) =>
         game._id === this.filtersForm.value.gameSelected
@@ -213,19 +314,21 @@ export class DashboardComponent implements OnInit {
         (object: { fieldName: any }) => object.fieldName
       );
 
-      this.chartsTitlesAndInputIds = [
+      this.chartsObj = [
         {
           title: 'Dias usando a plataforma',
           id: 'daysLogged',
+          chart: new chartDaysBuilder({}),
         },
       ].concat(
         chartsTitles.map((title: any, index: string | number) => ({
           title,
           id: inputIds[index],
+          measuredIn: selectedGame.resultsStructure[index].measuredIn,
+          chart: new chartBarBuilder({ sound: '' }, { type: '' }, {}),
         }))
       );
     }
-    console.log(this.chartsTitlesAndInputIds);
   }
 
   listGames() {
@@ -247,70 +350,6 @@ export class DashboardComponent implements OnInit {
 
   findIndexById(array: any[], id: string): number {
     return array.findIndex((item) => item._id === id);
-  }
-
-  loadCharts() {
-    //TODO - get data to plot charts on backend
-    // this.chartDays = new chartDaysBuilder(this.charts.chartDaysData);
-    // this.chartPoints = new chartBarBuilder(
-    //   this.soundSelect,
-    //   { type: 'points' },
-    //   this.charts.chartPointsData
-    // );
-    // this.chartTimeAssignment = new chartBarBuilder(
-    //   this.soundSelect,
-    //   { type: 'time' },
-    //   this.charts.chartTimeAssignmentData
-    // );
-    // this.chartTimeClickColor = new chartBarBuilder(
-    //   this.soundSelect,
-    //   { type: 'time' },
-    //   this.charts.chartTimeClickColorData
-    // );
-  }
-
-  renderCharts() {
-    this.chartDaysRender = new ApexCharts(
-      document.querySelector('#chartDays'),
-      this.chartDays.getOptionsChartDays()
-    );
-    this.chartDaysRender.render();
-
-    // this.chartPointsRender = new ApexCharts(
-    //   document.querySelector('#chartPoints'),
-    //   this.chartPoints.getOptionsChartPoints()
-    // );
-    // this.chartPointsRender.render();
-
-    // this.chartTimeAssignmentRender = new ApexCharts(
-    //   document.querySelector('#chartTimeAssignment'),
-    //   this.chartTimeAssignment.getOptionsChartPoints()
-    // );
-    // this.chartTimeAssignmentRender.render();
-
-    // this.chartTimeClickColorRender = new ApexCharts(
-    //   document.querySelector('#chartTimeClickColor'),
-    //   this.chartTimeClickColor.getOptionsChartPoints()
-    // );
-    // this.chartTimeClickColorRender.render();
-  }
-  //TODO i think this is not needed
-  updateCharts() {
-    this.chartDaysRender.updateOptions(
-      this.chartDays.getOptionsChartDays(),
-      true
-    );
-    // this.chartPointsRender.updateOptions(
-    //   this.chartPoints.getOptionsChartPoints()
-    // );
-
-    // this.chartTimeAssignmentRender.updateOptions(
-    //   this.chartTimeAssignment.getOptionsChartPoints()
-    // );
-
-    // this.chartTimeClickColorRender.updateOptions(
-    //   this.chartTimeClickColor.getOptionsChartPoints()
-    // );
   }
 
   downloadPdf() {
@@ -449,59 +488,30 @@ export class DashboardComponent implements OnInit {
     let index = this.findIndexById(this.listPatients, this.patientId);
     this.patient = this.listPatients[index];
 
-    if (this.patient.birthDate) {
-      const today = new Date();
-      const birthDate = new Date(this.patient.birthDate);
+    this.patient.age = moment().diff(moment(this.patient.birthDate), 'years');
+    this.patient.birthDateFormatted = moment(this.patient.birthDate).format(
+      'L'
+    );
+    this.patient.diagnosisDateFormatted = moment(
+      this.patient.diagnosisDate
+    ).format('L');
 
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
+    const therapyStart = moment(this.patient.createdAt);
+    const diffDays = moment().diff(therapyStart, 'days');
+    let therapyTime;
 
-      this.patient.age = age;
-      this.patient.birthDateFormatted = new Date(
-        this.patient.birthDate
-      ).toLocaleDateString('pt-BR');
-    }
+    if (diffDays < 30) {
+      therapyTime = diffDays + (diffDays === 1 ? ' dia' : ' dias');
+    } else {
+      const diffYears = moment().diff(therapyStart, 'years');
+      const diffMonths = moment().diff(therapyStart, 'months') % 12;
+      therapyTime = diffYears + (diffYears === 1 ? ' ano' : ' anos');
 
-    if (this.patient.diagnosisDate) {
-      this.patient.diagnosisDateFormatted = new Date(
-        this.patient.diagnosisDate
-      ).toLocaleDateString('pt-BR');
-    }
-    if (this.patient.createdAt) {
-      const therapyStart = new Date(this.patient.createdAt);
-      const therapyEnd = new Date();
-      const diffTime = Math.abs(therapyEnd.getTime() - therapyStart.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays < 30) {
-        this.patient.therapyTime =
-          diffDays === 1 ? diffDays + ' dia' : diffDays + ' dias';
-      } else {
-        const diffYears = Math.floor(diffDays / 365);
-        const diffMonths = Math.floor((diffDays - diffYears * 365) / 30) % 12;
-        const diffMonthString =
-          diffMonths === 1 ? diffMonths + ' mês' : diffMonths + ' meses';
-        const diffYearString =
-          diffYears === 1 ? diffYears + ' ano' : diffYears + ' anos';
-        const diffDayString =
-          diffDays - diffYears * 365 - diffMonths * 30 + ' dias';
-
-        if (diffYears > 0 && diffMonths > 0 && diffDays > 0) {
-          this.patient.therapyTime =
-            diffYearString + ', ' + diffMonthString + ' e ' + diffDayString;
-        } else if (diffYears > 0 && diffMonths === 0) {
-          this.patient.therapyTime = diffYearString;
-        } else if (diffYears > 0 && diffMonths > 0) {
-          this.patient.therapyTime = diffYearString + ' e ' + diffMonthString;
-        } else if (diffMonths > 0 && diffDays === 0) {
-          this.patient.therapyTime = diffMonthString;
-        } else if (diffMonths > 0 && diffDays > 0) {
-          this.patient.therapyTime = diffMonthString + ' e ' + diffDayString;
-        }
+      if (diffMonths > 0) {
+        therapyTime +=
+          ' e ' + diffMonths + (diffMonths === 1 ? ' mês' : ' meses');
       }
     }
+    this.patient.therapyTime = therapyTime;
   }
 }

@@ -22,7 +22,11 @@ export class chartDaysBuilder {
     if (percentage == 100) {
       this.optionsChartDays.fill.colors = [this.successColor];
     }
-    this.optionsChartDays.labels[0] = days + ' dias';
+    if (days > 1) {
+      this.optionsChartDays.labels[0] = days + ' dias';
+    } else {
+      this.optionsChartDays.labels[0] = days + ' dia';
+    }
   }
 
   getOptionsChartDays() {
@@ -127,15 +131,14 @@ export class chartDaysBuilder {
   };
 }
 
-interface interfaceChartBar {
-  type?: string;
+export interface interfaceChartBar {
   series?: any;
   xaxisCategories?: string[];
 }
 
 export class chartBarBuilder {
   constructor(
-    { sound }: { sound: boolean },
+    { sound }: { sound: string },
     { type }: { type: string },
     {
       series = { name: '', data: [0] },
@@ -143,29 +146,19 @@ export class chartBarBuilder {
     }: interfaceChartBar
   ) {
     this.optionsChartBar.xaxis.categories = xaxisCategories;
-    sound
+    sound === 'true'
       ? (this.optionsChartBar.series = series)
       : (this.optionsChartBar.series[0] = series[0]);
 
-    if (type === 'time') {
-      this.optionsChartBar.yaxis.title.text = this.typeSeconds;
-      this.optionsChartBar.tooltip.y.formatter = (val: string) => {
-        return val + this.typeSeconds;
-      };
-    } else {
-      this.optionsChartBar.yaxis.title.text = this.typePoints;
-      this.optionsChartBar.tooltip.y.formatter = (val: string) => {
-        return val + this.typePoints;
-      };
-    }
+    this.optionsChartBar.yaxis.title.text = type;
+    this.optionsChartBar.tooltip.y.formatter = (val: string) => {
+      return val + ' ' + type;
+    };
   }
 
   getOptionsChartPoints() {
     return this.optionsChartBar;
   }
-
-  typePoints: string = ' Pontos';
-  typeSeconds: string = ' Segundos';
 
   optionsChartBar = {
     series: [{}],
