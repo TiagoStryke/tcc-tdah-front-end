@@ -192,13 +192,13 @@
                       [rangePicker]="picker"
                     >
                       <input
-                        (ngModelChange)="filtersForm.valid && filtersChange()"
+                        (ngModelChange)="filtersChange()"
                         matStartDate
                         placeholder="Data de início"
                         formControlName="start"
                       />
                       <input
-                        (ngModelChange)="filtersForm.valid && filtersChange()"
+                        (ngModelChange)="filtersChange()"
                         matEndDate
                         placeholder="Data final"
                         formControlName="end"
@@ -231,7 +231,7 @@
                     <form [formGroup]="filtersForm">
                       <select
                         formControlName="gameSelected"
-                        (change)="filtersForm.valid && filtersChange()"
+                        (change)="filtersChange()"
                         class="form-select"
                         id="gameType"
                       >
@@ -259,7 +259,6 @@
                         <option value="true">
                           Com a presença de estímulos sonoros
                         </option>
-                        <option value="both">Ambos - Comparar</option>
                       </select>
                     </form>
                   </h3>

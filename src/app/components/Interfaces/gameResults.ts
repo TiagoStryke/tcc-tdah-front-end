@@ -1,4 +1,8 @@
 export interface GameResults {
-  results?: object;
-  date?: string;
+  results: Record<string, number>;
+  sound: string;
+  date: string;
+  _id: string;
+  patientId: string;
+  gameId: string;
 }

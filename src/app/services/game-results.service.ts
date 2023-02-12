@@ -20,20 +20,8 @@ export class GameResultsService extends DefaultService {
     dateEnd: string,
     sound: string
   ): Observable<any> {
-    return this.http.get<any>(
+    return this.http.get<ResponseApp<GameResults>>(
       `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}`
-    );
-  }
-
-  listResultsAverage(
-    patientId: string,
-    gameId: string,
-    dateStart: string,
-    dateEnd: string,
-    sound: string
-  ): Observable<any> {
-    return this.http.get<any>(
-      `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}/average`
     );
   }
 
@@ -44,7 +32,7 @@ export class GameResultsService extends DefaultService {
     dateEnd: string,
     sound: string
   ): Observable<any> {
-    return this.http.get<any>(
+    return this.http.get<ResponseApp<GameResults>>(
       `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}/monthaverage`
     );
   }
@@ -56,7 +44,7 @@ export class GameResultsService extends DefaultService {
     dateEnd: string,
     sound: string
   ): Observable<any> {
-    return this.http.get<any>(
+    return this.http.get<ResponseApp<GameResults>>(
       `${this.url}/patient/${patientId}/game/${gameId}/${dateStart}/${dateEnd}/${sound}/yearaverage`
     );
   }

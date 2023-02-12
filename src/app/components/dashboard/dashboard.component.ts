@@ -1,5 +1,4 @@
 import * as ApexCharts from 'apexcharts';
-import * as mockData from 'src/app/helpers/mockData';
 import * as moment from 'moment';
 
 import { Component, OnInit } from '@angular/core';
@@ -60,10 +59,7 @@ export class DashboardComponent implements OnInit {
     ]),
     soundStimuli: new FormControl('false', [Validators.required]),
   });
-  gameResults: any;
-  categories: string[] = [];
-  series: { name: string; data: (number | undefined)[] }[] = [];
-  chartsObj: any;
+  chartsObj: any = undefined;
 
   constructor(
     private jwtToken: JWT_token,
@@ -82,12 +78,20 @@ export class DashboardComponent implements OnInit {
   }
 
   filtersChange() {
-    this.destroyAllCharts();
-    this.getCharts();
-    this.getGameResults();
+    if (
+      this.filtersForm.valid &&
+      this.filtersForm.controls.start.value &&
+      this.filtersForm.controls.end.value
+    ) {
+      this.getGameResults(
+        this.filtersForm.controls.start.value,
+        this.filtersForm.controls.end.value
+      );
+    } else {
+      this.destroyAllCharts();
+    }
+
     this.showCharts();
-    this.generateXaxisCategories();
-    this.loadResults();
   }
 
   ifChecked(event: Event) {
@@ -103,104 +107,173 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  getGameResults() {
+  getGameResults(start: moment.MomentInput, end: moment.MomentInput) {
+    start = moment(start);
+    end = moment(end);
+
     if (
-      this.filtersForm.valid &&
       this.filtersForm.value.gameSelected &&
-      this.filtersForm.value.soundStimuli
+      this.filtersForm.value.soundStimuli &&
+      this.filtersForm.valid
     ) {
-      this.rService
-        .listResultsbyPeriod(
-          this.patientId,
-          this.filtersForm.value.gameSelected,
-          moment(this.filtersForm.value.start)
-            .startOf('day')
-            .utc()
-            .toISOString(),
-          moment(this.filtersForm.value.end).endOf('day').utc().toISOString(),
-          this.filtersForm.value.soundStimuli
-        )
-        .pipe(
-          tap((data) => {
-            console.log(data);
-          }),
-          catchError((error) => {
-            console.error(error);
-            return of(null);
-          })
-        )
-        .subscribe((res) => {
-          this.gameResults = res.body;
-        });
+      if (end.diff(start, 'months') > 2 && end.diff(start, 'years') < 2) {
+        console.log('usou months');
+        this.rService
+          .listResultsMonthAverage(
+            this.patientId,
+            this.filtersForm.value.gameSelected,
+            start.startOf('day').utcOffset(-180).toISOString(),
+            end.endOf('day').utcOffset(-180).toISOString(),
+            this.filtersForm.value.soundStimuli
+          )
+          .pipe(
+            catchError((error) => {
+              this.toastr.error(error);
+              return of(null);
+            })
+          )
+          .subscribe((res) => {
+            this.loadResults(res.body);
+          });
+      } else if (end.diff(start, 'years') > 2) {
+        console.log('usou years');
+        this.rService
+          .listResultsYearAverage(
+            this.patientId,
+            this.filtersForm.value.gameSelected,
+            start.startOf('day').utcOffset(-180).toISOString(),
+            end.endOf('day').utcOffset(-180).toISOString(),
+            this.filtersForm.value.soundStimuli
+          )
+          .pipe(
+            catchError((error) => {
+              this.toastr.error(error);
+              return of(null);
+            })
+          )
+          .subscribe((res) => {
+            this.loadResults(res.body);
+          });
+      } else {
+        this.rService
+          .listResultsbyPeriod(
+            this.patientId,
+            this.filtersForm.value.gameSelected,
+            start.startOf('day').utcOffset(-180).toISOString(),
+            end.endOf('day').utcOffset(-180).toISOString(),
+            this.filtersForm.value.soundStimuli
+          )
+          .pipe(
+            catchError((error) => {
+              this.toastr.error(error);
+              return of(null);
+            })
+          )
+          .subscribe((res) => {
+            this.loadResults(res.body);
+          });
+      }
     }
   }
 
-  loadResults() {
-    if (this.filtersForm.valid) {
-      console.log('results = ', this.gameResults);
-    }
+  loadResults(gameResults: GameResults[]) {
+    console.log('results', gameResults);
+    if (this.filtersForm.valid && gameResults) {
+      console.log(this.games);
+      const selectedGame = this.games.find(
+        (game: { _id: string | null | undefined }) =>
+          game._id === this.filtersForm.value.gameSelected
+      );
 
-    //TODO correct results undefined
-    if (this.chartsObj && this.gameResults) {
-      this.chartsObj.forEach(
-        (
-          obj: { chart: chartDaysBuilder | chartBarBuilder; measuredIn: any },
-          index: number
-        ) => {
-          if (index === 0) {
-            obj.chart = new chartDaysBuilder({
-              days: this.countDays(this.gameResults),
-              percentage: this.calculatePercentage(),
-            });
-          } else {
-            obj.chart = new chartBarBuilder(
+      if (selectedGame) {
+        let chartsTitles = selectedGame.resultsStructure.map(
+          (object: { portugueseTitle: any }) => object.portugueseTitle
+        );
+        let inputIds = selectedGame.resultsStructure.map(
+          (object: { fieldName: any }) => object.fieldName
+        );
+
+        this.chartsObj = [
+          {
+            title: 'Dias usando a plataforma',
+            id: 'daysLogged',
+            chart: new chartDaysBuilder({
+              days: this.countDays(gameResults),
+              percentage: this.calculatePercentage(gameResults),
+            }),
+          },
+        ].concat(
+          chartsTitles.map((title: any, index: string | number) => ({
+            title,
+            id: inputIds[index],
+            chart: new chartBarBuilder(
               {
                 sound: this.filtersForm.value.soundStimuli
                   ? this.filtersForm.value.soundStimuli
-                  : '',
+                  : 'error',
               },
-              { type: obj.measuredIn },
+              { type: selectedGame.resultsStructure[index].measuredIn },
               {
-                xaxisCategories: this.categories,
-                series: this.series,
+                xaxisCategories: this.generateXaxisCategories(gameResults),
+                series: this.generateSeries(
+                  selectedGame.resultsStructure[index].measuredIn,
+                  gameResults,
+                  inputIds[index]
+                ),
               }
-            );
-          }
-        }
-      );
+            ),
+          }))
+        );
+      }
     }
   }
 
-  generateSeries() {
-    this.series = [
-      { name: 'Pontos', data: [50, 0, 0, 30, 0, 0, 0, 120] },
-      { name: 'Estímulos sonoros', data: [60, , , 40, , , 130] },
-    ];
+  generateSeries(name: string, results: GameResults[], id: string) {
+    let series: { name: string; data: number[] }[] = [];
+
+    let data = results.map(
+      (result) => result.results[id].toFixed(1) as unknown as number
+    );
+
+    series.push({
+      name: name,
+      data: data,
+    });
+    return series;
   }
 
-  generateXaxisCategories() {
-    if (this.filtersForm.valid) {
-      const start = moment(this.filtersForm.value.start);
-      const end = moment(this.filtersForm.value.end);
-      this.categories = [];
+  generateXaxisCategories(r: any) {
+    let categories: string[] = [];
+    let dateStrings: string[] = [];
 
-      if (end.diff(start, 'years') > 2) {
-        while (start.year() <= end.year()) {
-          this.categories.push(start.year().toString());
-          start.add(1, 'year');
+    for (let i = 0; i < r.length; i++) {
+      if (r[i].date) {
+        const date = moment.utc(r[i].date);
+        const dateString = `${date
+          .date()
+          .toString()
+          .padStart(2, '0')} ${date.format('MMM')}`;
+        categories.push(dateString);
+        dateStrings.push(dateString);
+      } else if (r[i].results['month-year']) {
+        const [month, year] = r[i].results['month-year'].split('-');
+        const dateString = `${moment()
+          .month(+month - 1)
+          .format('MMM')} ${year}`;
+        if (!dateStrings.includes(dateString)) {
+          categories.push(dateString);
+          dateStrings.push(dateString);
         }
-      } else if (end.diff(start, 'months') > 2) {
-        while (start <= end) {
-          this.categories.push(start.locale('pt-br').format('MMM'));
-          start.add(1, 'month');
-        }
-      } else {
-        while (start <= end) {
-          this.categories.push(start.locale('pt-br').format('DD MMM'));
-          start.add(1, 'day');
+      } else if (r[i].results.year) {
+        const dateString = r[i].results.year;
+        if (!dateStrings.includes(dateString)) {
+          categories.push(dateString);
+          dateStrings.push(dateString);
         }
       }
     }
+    console.log('categories = ', categories);
+    return categories;
   }
 
   renderChart(index: number) {
@@ -230,9 +303,9 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  calculatePercentage() {
+  calculatePercentage(gameResults: any[]) {
     let percentage =
-      (this.countDays(this.gameResults) * 100) /
+      (this.countDays(gameResults) * 100) /
       moment(this.filtersForm.value.end).diff(
         moment(this.filtersForm.value.start),
         'days'
@@ -241,17 +314,11 @@ export class DashboardComponent implements OnInit {
   }
 
   countDays(results: any[]): number {
-    const days = new Set<string>();
+    let days = 0;
     results.forEach((result) => {
-      const day = result.date.substring(0, 10);
-      days.add(day);
+      days += result.daysLogged;
     });
-    return days.size;
-  }
-
-  subtractDates(date1: Date, date2: Date): number {
-    const timeDiff = Math.abs(date2.getTime() - date1.getTime());
-    return timeDiff / (1000 * 3600 * 24);
+    return days;
   }
 
   gameSelectedValidator(control: FormControl) {
@@ -288,46 +355,12 @@ export class DashboardComponent implements OnInit {
   showCharts() {
     let info = document.querySelector('.filtersSelected');
     let warning = document.querySelector('.noFiltersSelected');
-
-    if (this.filtersForm.valid && this.gameResults) {
-      if (warning && !warning.classList.contains('hidden') && info) {
-        this.toggleHidden(warning);
-        this.toggleHidden(info);
-      }
+    if (warning && info && this.filtersForm.valid) {
+      info.classList.remove('hidden');
+      warning.classList.add('hidden');
     } else if (warning && info) {
-      this.toggleHidden(warning);
-      this.toggleHidden(info);
-    }
-  }
-
-  getCharts() {
-    const selectedGame = this.games.find(
-      (game: { _id: string | null | undefined }) =>
-        game._id === this.filtersForm.value.gameSelected
-    );
-
-    if (selectedGame) {
-      let chartsTitles = selectedGame.resultsStructure.map(
-        (object: { portugueseTitle: any }) => object.portugueseTitle
-      );
-      let inputIds = selectedGame.resultsStructure.map(
-        (object: { fieldName: any }) => object.fieldName
-      );
-
-      this.chartsObj = [
-        {
-          title: 'Dias usando a plataforma',
-          id: 'daysLogged',
-          chart: new chartDaysBuilder({}),
-        },
-      ].concat(
-        chartsTitles.map((title: any, index: string | number) => ({
-          title,
-          id: inputIds[index],
-          measuredIn: selectedGame.resultsStructure[index].measuredIn,
-          chart: new chartBarBuilder({ sound: '' }, { type: '' }, {}),
-        }))
-      );
+      info.classList.add('hidden');
+      warning.classList.remove('hidden');
     }
   }
 
@@ -353,7 +386,13 @@ export class DashboardComponent implements OnInit {
   }
 
   downloadPdf() {
-    //FIXME - verify if this is the data needed, format the data and add to pdf
+    // const pdf = new pdfjs.Pdf();
+    // html2canvas(document.querySelector('#pdf-content')).then(canvas => {
+    //   const imgData = canvas.toDataURL('image/png');
+    //   pdf.addImage(imgData, 'PNG', 0, 0, 211, 298);
+    //   pdf.save('file.pdf');
+    // });
+    // // FIXME - verify if this is the data needed, format the data and add to pdf
     // const doc = new jsPDF();
     // //write the pdf file
     // doc.insertPage(1);
@@ -375,26 +414,25 @@ export class DashboardComponent implements OnInit {
     // let posY = [10, 74.25, 148.5, 222.75];
     // let posText = [88, 102, 90, 90];
     // //FIXME - this whole part is repeating itself put it on a loop
-    // this.chartDaysRender.dataURI().then((data) => {
+    //  this.chartsObj[0].chartRender.dataURI().then((data:any) => {
     //   let imgURI = Object.values(data);
     //   doc.setPage(2);
-    //   //TODO - calculate the size to aways be round
     //   doc.addImage(imgURI[0], 'PNG', 60, posY[0], 100, 64.25);
-    //   doc.text(this.labels.charts[0], posText[0], posY[0]);
-    //   this.chartPointsRender.dataURI().then((data) => {
+    //   doc.text(this.chartsObj[0].title, posText[0], posY[0]);
+    //   this.chartsObj[1].chartRender.dataURI().then((data:any) => {
     //     let imgURI = Object.values(data);
     //     doc.addImage(imgURI[0], 'PNG', 60, posY[1], 100, 64.25);
-    //     doc.text(this.labels.charts[1], posText[1], posY[1]);
-    //     this.chartTimeAssignmentRender.dataURI().then((data) => {
+    //     doc.text(this.chartsObj[1].title, posText[1], posY[1]);
+    //     this.chartsObj[2].chartRender.dataURI().then((data:any) => {
     //       let imgURI = Object.values(data);
     //       doc.addImage(imgURI[0], 'PNG', 60, posY[2], 100, 64.25);
-    //       doc.text(this.labels.charts[2], posText[2], posY[2]);
-    //       this.chartTimeClickColorRender
+    //       doc.text(this.chartsObj[2].title, posText[2], posY[2]);
+    //       this.chartsObj[3].chartRender
     //         .dataURI()
-    //         .then((data) => {
+    //         .then((data:any) => {
     //           let imgURI = Object.values(data);
     //           doc.addImage(imgURI[0], 'PNG', 60, posY[3], 100, 64.25);
-    //           doc.text(this.labels.charts[3], posText[3], posY[3]);
+    //           doc.text(this.chartsObj[3].title, posText[3], posY[3]);
     //         })
     //         .finally(() => {
     //           doc.save('relatorio.pdf');
@@ -438,6 +476,7 @@ export class DashboardComponent implements OnInit {
     } else if (this.searchBar) {
       main.style.display = 'none';
     }
+    console.log('obj', this.chartsObj);
   }
 
   toggleOptions() {
