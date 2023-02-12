@@ -17,6 +17,7 @@ import { PatientService } from 'src/app/services/patient.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from 'src/app/services/user.service';
+import html2canvas from 'html2canvas';
 import { interfaceChartBar } from '../../models/charts-options';
 import { jsPDF } from 'jspdf';
 
@@ -385,61 +386,16 @@ export class DashboardComponent implements OnInit {
     return array.findIndex((item) => item._id === id);
   }
 
-  downloadPdf() {
-    // const pdf = new pdfjs.Pdf();
-    // html2canvas(document.querySelector('#pdf-content')).then(canvas => {
-    //   const imgData = canvas.toDataURL('image/png');
-    //   pdf.addImage(imgData, 'PNG', 0, 0, 211, 298);
-    //   pdf.save('file.pdf');
-    // });
-    // // FIXME - verify if this is the data needed, format the data and add to pdf
-    // const doc = new jsPDF();
-    // //write the pdf file
-    // doc.insertPage(1);
-    // doc.setPage(1);
-    // doc.setFontSize(10);
-    // doc.text('Relatório de Terapia:', 100, 10, { align: 'center' });
-    // //FIXME - this whole part is repeating itself put it on a loop
-    // doc.text(this.labels.info[0], 10, 20);
-    // doc.text(this.labels.info[1], 10, 30);
-    // doc.text(this.labels.info[2], 10, 40);
-    // doc.text(this.labels.info[3], 10, 50);
-    // doc.text(this.labels.info[4], 10, 60);
-    // doc.text(this.labels.info[5], 10, 70);
-    // doc.text(this.labels.info[6], 10, 80);
-    // //TODO - add the data of selected range with if statement
-    // doc.text(this.labels.info[7], 10, 90);
-    // //TODO - add the data of selected checkbox with if statement
-    // doc.text(this.labels.info[8], 10, 100);
-    // let posY = [10, 74.25, 148.5, 222.75];
-    // let posText = [88, 102, 90, 90];
-    // //FIXME - this whole part is repeating itself put it on a loop
-    //  this.chartsObj[0].chartRender.dataURI().then((data:any) => {
-    //   let imgURI = Object.values(data);
-    //   doc.setPage(2);
-    //   doc.addImage(imgURI[0], 'PNG', 60, posY[0], 100, 64.25);
-    //   doc.text(this.chartsObj[0].title, posText[0], posY[0]);
-    //   this.chartsObj[1].chartRender.dataURI().then((data:any) => {
-    //     let imgURI = Object.values(data);
-    //     doc.addImage(imgURI[0], 'PNG', 60, posY[1], 100, 64.25);
-    //     doc.text(this.chartsObj[1].title, posText[1], posY[1]);
-    //     this.chartsObj[2].chartRender.dataURI().then((data:any) => {
-    //       let imgURI = Object.values(data);
-    //       doc.addImage(imgURI[0], 'PNG', 60, posY[2], 100, 64.25);
-    //       doc.text(this.chartsObj[2].title, posText[2], posY[2]);
-    //       this.chartsObj[3].chartRender
-    //         .dataURI()
-    //         .then((data:any) => {
-    //           let imgURI = Object.values(data);
-    //           doc.addImage(imgURI[0], 'PNG', 60, posY[3], 100, 64.25);
-    //           doc.text(this.chartsObj[3].title, posText[3], posY[3]);
-    //         })
-    //         .finally(() => {
-    //           doc.save('relatorio.pdf');
-    //         });
-    //     });
-    //   });
-    // });
+  async downloadPdf() {
+    const data = document.getElementById('main');
+    let canvas: any;
+    if (data) {
+      canvas = await html2canvas(data, { scale: 2 });
+    }
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 211, 298);
+    pdf.save(`Relatório-${new Date().toLocaleDateString()}.pdf`);
   }
 
   //TODO do this better - use .classList.toggle
