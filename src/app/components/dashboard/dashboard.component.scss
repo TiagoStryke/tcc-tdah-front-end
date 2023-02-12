@@ -1,20 +1,4 @@
-// TODO use purgecss to remove unused css
-// TODO centralize colors variables in a single file
-$color-primary-dark: #5b6aee;
-$color-primary: #7380ec;
-$color-primary-light: #8c9eff;
-$color-primary-lighter: #a8b7ff;
-$color-success: #41f1b6;
-$color-warning: #ffbb55;
-$color-white: #fff;
-$color-info-dark: #7d8da1;
-$color-info-light: #dce1eb;
-$color-dark: #363949;
-$color-light: rgba(132, 139, 200, 0.18);
-$color-banner: #7380ec;
-$color-background: #f9f8ff;
-$standard-font-size: 0.88rem;
-$color-label: hsl(213, 16%, 40%);
+@import "src/assets/_colors";
 
 * {
   margin: 0;
@@ -204,18 +188,20 @@ aside .bottom {
 }
 
 .list-group :hover {
-  color: $color-primary;
   border-color: $color-primary;
-  padding-left: 2rem;
-  transition: all 0.3s ease;
   cursor: pointer;
 }
 
-aside ul {
-  overflow: scroll;
+li {
+  display: flex;
+  justify-content: space-between;
 }
 
-aside ul :hover:before {
+li:hover {
+  color: $color-primary;
+}
+
+li:hover::before {
   content: "";
   height: 102%;
   width: 3px;
@@ -223,6 +209,24 @@ aside ul :hover:before {
   position: absolute;
   left: 0px;
   top: 0px;
+}
+
+.fa-trash-alt {
+  margin-right: 10px;
+  color: #dddddd;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.fas:hover {
+  color: #f86a6a;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+}
+
+.move:hover {
+  padding-left: 1.3rem;
+  transition: all 0.3s ease;
 }
 
 mat-datepicker-toggle {
@@ -346,7 +350,6 @@ mat-date-range-input {
   transition: all 0.3s ease;
 }
 
-//TODO - remove that code and leave only in the banner component
 .banner-content {
   color: #f9f8ff;
 }
@@ -459,4 +462,10 @@ mat-date-range-input {
 
 .show {
   display: block;
+}
+
+@media (max-width: 576px) {
+  .menu-btn {
+    display: block;
+  }
 }

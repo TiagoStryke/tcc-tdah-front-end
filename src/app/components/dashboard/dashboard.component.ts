@@ -95,6 +95,13 @@ export class DashboardComponent implements OnInit {
     this.showCharts();
   }
 
+  deletePatient(id: string) {
+    this.pService.deletePatient(id).subscribe((res) => {
+      this.toastr.success('Paciente excluído com sucesso!');
+      this.getListOfPatients();
+    });
+  }
+
   ifChecked(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     const isChecked = checkbox.checked;
@@ -118,7 +125,6 @@ export class DashboardComponent implements OnInit {
       this.filtersForm.valid
     ) {
       if (end.diff(start, 'months') > 2 && end.diff(start, 'years') < 2) {
-        console.log('usou months');
         this.rService
           .listResultsMonthAverage(
             this.patientId,
@@ -137,7 +143,6 @@ export class DashboardComponent implements OnInit {
             this.loadResults(res.body);
           });
       } else if (end.diff(start, 'years') > 2) {
-        console.log('usou years');
         this.rService
           .listResultsYearAverage(
             this.patientId,
@@ -178,9 +183,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadResults(gameResults: GameResults[]) {
-    console.log('results', gameResults);
     if (this.filtersForm.valid && gameResults) {
-      console.log(this.games);
       const selectedGame = this.games.find(
         (game: { _id: string | null | undefined }) =>
           game._id === this.filtersForm.value.gameSelected
@@ -273,7 +276,7 @@ export class DashboardComponent implements OnInit {
         }
       }
     }
-    console.log('categories = ', categories);
+
     return categories;
   }
 
@@ -398,41 +401,33 @@ export class DashboardComponent implements OnInit {
     pdf.save(`Relatório-${new Date().toLocaleDateString()}.pdf`);
   }
 
-  //TODO do this better - use .classList.toggle
   controlDisplay() {
     let aside = document.querySelector('#aside') as HTMLElement;
-    let menuButton = document.querySelector('.menu-btn') as HTMLElement;
     let main = document.querySelector('#main') as HTMLElement;
     let body = document.querySelector('body') as HTMLElement;
     if (body.clientWidth < 576) {
       if (this.searchBar) {
         aside.style.display = 'none';
-        menuButton.style.display = 'block';
         main.style.display = 'block';
         this.searchBar = false;
       } else {
         aside.style.display = 'block';
-        menuButton.style.display = 'block';
         main.style.display = 'none';
         this.searchBar = true;
       }
     }
   }
 
-  //TODO should be a way to get rid of this with media querys
   onResize(event: any) {
     let aside = document.querySelector('#aside') as HTMLElement;
-    let menuButton = document.querySelector('.menu-btn') as HTMLElement;
     let main = document.querySelector('#main') as HTMLElement;
     if (event.target.innerWidth > 576) {
       aside.style.display = 'block';
-      menuButton.style.display = 'none';
       main.style.display = 'block';
       this.searchBar = true;
     } else if (this.searchBar) {
       main.style.display = 'none';
     }
-    console.log('obj', this.chartsObj);
   }
 
   toggleOptions() {

@@ -16,4 +16,8 @@ export class PatientService extends DefaultService {
   listPatients(id: string): Observable<ResponseApp<User>> {
     return this.http.get<ResponseApp<User>>(`${this.url}/responsible/${id}`);
   }
+
+  deletePatient(id: string): Observable<ResponseApp<User>> {
+    return this.http.delete<ResponseApp<User>>(`${this.url}/${id}`);
+  }
 }

@@ -23,6 +23,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SignupComponent } from './components/signup/signup.component';
 import { ToastrModule } from 'ngx-toastr';
 import { UserService } from './services/user.service';
+import { AdminComponent } from './components/admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { UserService } from './services/user.service';
     ProfileComponent,
     HeaderComponent,
     CodeGeneratorComponent,
+    AdminComponent,
   ],
   imports: [
     BrowserModule,

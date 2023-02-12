@@ -23,11 +23,9 @@
     <a href="/dashboard" class="back">
       <div class="banner">
         <div class="banner-img">
-          <!-- TODO - add proper logo this one is a test -->
           <img src="assets/images/logo-test.png" />
         </div>
         <div class="banner-content">
-          <!-- TODO  - add proper title -->
           <h1>PROJETO TCC</h1>
         </div>
       </div>
@@ -94,16 +92,22 @@
             <div class="bottom">
               <ul class="list-group list-group-flush">
                 <li
-                  (click)="getIdFromClick($event)"
                   class="list-group-item"
                   *ngFor="let c of listPatients | appFilter : searchText"
-                  appHighlight
-                  [searchedWord]="searchText"
-                  [content]="c.name"
-                  [classToApply]="'fw-bolder'"
-                  id="{{ c._id }}"
                 >
-                  {{ c }}
+                  <span
+                    id="{{ c._id }}"
+                    (click)="getIdFromClick($event)"
+                    class="move"
+                    appHighlight
+                    [searchedWord]="searchText"
+                    [content]="c.name"
+                    [classToApply]="'fw-bolder'"
+                  ></span>
+                  <i
+                    class="fas fa-trash-alt"
+                    (click)="deletePatient(c._id); $event.stopPropagation()"
+                  ></i>
                 </li>
               </ul>
             </div>
