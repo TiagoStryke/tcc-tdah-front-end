@@ -1,1 +1,30 @@
-<p>admin works!</p>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+/>
+<div class="outer">
+  <app-header></app-header>
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Administração</title>
+    </head>
+    <body>
+      <h1>Deletar Usuários</h1>
+      <ul>
+        <li *ngFor="let c of listOfUsers">
+          <input
+            type="user"
+            id="{{ c._id }}"
+            name="{{ c.name }}"
+            value="{{ c.name }}"
+            disabled
+          />
+          <button (click)="deleteUser(c._id)" class="delete">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </li>
+      </ul>
+    </body>
+  </html>
+</div>

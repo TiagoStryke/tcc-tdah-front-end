@@ -7,11 +7,13 @@ import { catchError, of, tap } from 'rxjs';
 import { chartBarBuilder, chartDaysBuilder } from '../../models/charts-options';
 
 import { DateRange } from '@angular/material/datepicker';
+import { DeleteUserModalComponent } from '../delete-dialog/delete-dialog.component';
 import { Game } from '../Interfaces/game';
 import { GameResults } from '../Interfaces/gameResults';
 import { GameResultsService } from 'src/app/services/game-results.service';
 import { GameService } from 'src/app/services/game.service';
 import { JWT_token } from 'src/app/services/jwt.token';
+import { MatDialog } from '@angular/material/dialog';
 import Patient from '../Interfaces/Patient';
 import { PatientService } from 'src/app/services/patient.service';
 import { Router } from '@angular/router';
@@ -61,6 +63,7 @@ export class DashboardComponent implements OnInit {
     soundStimuli: new FormControl('false', [Validators.required]),
   });
   chartsObj: any = undefined;
+  privilege: any = 'user';
 
   constructor(
     private jwtToken: JWT_token,
@@ -69,7 +72,8 @@ export class DashboardComponent implements OnInit {
     private pService: PatientService,
     private gService: GameService,
     private rService: GameResultsService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -96,9 +100,17 @@ export class DashboardComponent implements OnInit {
   }
 
   deletePatient(id: string) {
-    this.pService.deletePatient(id).subscribe((res) => {
-      this.toastr.success('Paciente excluído com sucesso!');
-      this.getListOfPatients();
+    const dialogRef = this.dialog.open(DeleteUserModalComponent, {
+      data: { id },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.pService.deletePatient(id).subscribe((res) => {
+          this.toastr.success('Paciente excluído com sucesso!');
+          this.getListOfPatients();
+        });
+      }
     });
   }
 
@@ -455,8 +467,16 @@ export class DashboardComponent implements OnInit {
       if (res.body.name) {
         this.userName = res.body.name.split(' ').shift();
         this.profilePhoto = res.body.profilePhoto;
+        if (res.body.privilege) this.getprivilege(res.body.privilege);
       }
     });
+  }
+
+  getprivilege(privilege: string) {
+    if (privilege != 'admin') {
+      const li = document.getElementById('admin') as HTMLElement;
+      li.style.display = 'none';
+    }
   }
 
   getListOfPatients() {

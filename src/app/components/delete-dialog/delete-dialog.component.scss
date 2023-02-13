@@ -1,0 +1,41 @@
+button {
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.yes {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border-width: 2px;
+}
+
+.yes:hover {
+  background-color: #3cd841;
+}
+
+.no:hover {
+  background-color: #ee382c;
+}
+.no {
+  background-color: #d14036;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border-width: 2px;
+}
+.actions {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.content {
+  text-align: center;
+  padding: 1rem;
+}
+
+.title {
+  text-align: center;
+  font-weight: bold;
+}
