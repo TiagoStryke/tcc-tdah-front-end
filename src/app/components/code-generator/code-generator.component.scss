@@ -63,6 +63,10 @@ button.edit {
   border-radius: 4px;
 }
 
+.edit:hover {
+  background-color: #b3b3b3;
+}
+
 input[type="submit"] {
   min-width: 342px;
   background-color: #4caf50;

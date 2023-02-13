@@ -42,7 +42,7 @@ export class CodeGeneratorComponent {
       code += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     this.code = code;
-    console.log(this.code);
+
     let userLogged: User = {
       _id: this.userId,
       generatedCode: [this.code],
@@ -55,6 +55,11 @@ export class CodeGeneratorComponent {
   }
 
   copyToClipboard() {
-    this.clipboard.copy(this.code);
+    if (this.code) {
+      this.clipboard.copy(this.code);
+      this.toastr.success('Código copiado com sucesso!', 'Sucesso');
+    } else {
+      this.toastr.warning('Você deve gerar um código!', 'Error');
+    }
   }
 }
