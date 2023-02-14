@@ -402,15 +402,21 @@ export class DashboardComponent implements OnInit {
   }
 
   async downloadPdf() {
-    const data = document.getElementById('main');
-    let canvas: any;
-    if (data) {
-      canvas = await html2canvas(data, { scale: 2 });
-    }
+    if (this.filtersForm.valid) {
+      const data = document.getElementById('main');
+      let canvas: any;
+      if (data) {
+        canvas = await html2canvas(data, { scale: 2 });
+      }
 
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 211, 298);
-    pdf.save(`Relatório-${new Date().toLocaleDateString()}.pdf`);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 211, 298);
+      pdf.save(`Relatório-${new Date().toLocaleDateString()}.pdf`);
+    } else {
+      this.toastr.warning(
+        'Selecione um paciente e preencha os filtros para gerar o relatório'
+      );
+    }
   }
 
   controlDisplay() {
